@@ -1,0 +1,2601 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>大众点评 · 生活特辑</title>
+    <style>
+      :root {
+        --bg: #e1d8cc;
+        --page-bg: #e1d8cc;
+        --muted: rgba(91, 86, 78, 0.52);
+        --paper-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --scale: 1;
+        --showcase-bg: #73472d;
+        --collect-p: 0;
+        --fifth-y: 1080px;
+        --post-flow-y: 0px;
+        --carry-box-x: 0px;
+        --carry-box-y: 0px;
+        --carry-box-scale: 1;
+        --old-card-y: 0px;
+        --old-card-scale: 1;
+        --old-card-opacity: 1;
+        --new-card-offset: 110px;
+        --new-card-scale: 0.36;
+        --new-card-combined-scale: 0.36;
+        --new-card-opacity: 0;
+        --box-opacity: 0;
+        --box-text-opacity: 0;
+        --box-text-y: 24px;
+        --fourth-title-opacity: 1;
+        --fourth-title-y: 0px;
+        --fifth-title-opacity: 0;
+        --fifth-title-y: 120px;
+        --kicker-color: rgba(224, 218, 211, 0.74);
+        --sixth-p: 0;
+        --sixth-title-opacity: 0;
+        --sixth-title-y: 130px;
+        --sixth-side-y: 0px;
+        --sixth-purple-x: -900px;
+        --sixth-orange-x: 1940px;
+        --sixth-page-y: 1080px;
+        --seventh-p: 0;
+        --seventh-page-y: 1080px;
+        --seventh-copy-y: 80px;
+        --seventh-folder-y: 70px;
+        --eighth-p: 0;
+        --eighth-page-y: 1080px;
+        --ninth-p: 0;
+        --ninth-page-y: 1080px;
+        --tenth-p: 0;
+        --tenth-page-y: 1080px;
+        --eleventh-p: 0;
+        --eleventh-page-y: 1080px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-height: 100%;
+        background: var(--bg);
+      }
+
+      body {
+        margin: 0;
+        min-height: 1180vh;
+        overflow-x: hidden;
+        color: #111;
+        background: #e1d8cc;
+        font-family: Inter, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      .hero {
+        position: sticky;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        min-height: 620px;
+        overflow: hidden;
+        background: var(--page-bg);
+        isolation: isolate;
+      }
+
+      .showcase-mode,
+      .collection-mode {
+        background: var(--page-bg);
+      }
+
+      .collection-mode {
+        background: var(--page-bg);
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .stage {
+        position: absolute;
+        z-index: 1;
+        left: 50%;
+        top: 50%;
+        width: 1920px;
+        height: 1080px;
+        transform: translate(-50%, -50%) scale(var(--scale));
+        transform-origin: center center;
+        contain: layout paint;
+      }
+
+      .label {
+        position: absolute;
+        z-index: 40;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1;
+        letter-spacing: 0;
+        user-select: none;
+        display: none;
+      }
+
+      .label-left {
+        left: 68px;
+        top: 45px;
+      }
+
+      .label-right {
+        right: 70px;
+        top: 45px;
+      }
+
+      .bottom-label {
+        position: absolute;
+        left: 50%;
+        bottom: 35px;
+        z-index: 40;
+        transform: translateX(-50%);
+        color: rgba(90, 86, 78, 0.62);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0;
+        opacity: 0.9;
+        user-select: none;
+        transition: opacity 0.32s ease, transform 0.32s ease;
+        display: none;
+      }
+
+      .page-indicator {
+        position: absolute;
+        right: 54px;
+        bottom: 42px;
+        z-index: 120;
+        min-width: 82px;
+        padding: 11px 16px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.44);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.68);
+        color: rgba(20, 17, 14, 0.78);
+        font-size: 18px;
+        font-weight: 760;
+        line-height: 1;
+        text-align: center;
+        box-shadow: 0 12px 30px rgba(46, 34, 22, 0.12);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .initialStack .bottom-label {
+        opacity: 0;
+      }
+
+      .title-mode .bottom-label,
+      .showcase-mode .bottom-label,
+      .collection-mode .bottom-label {
+        opacity: 0;
+        transform: translate(-50%, 10px);
+      }
+
+      .paper-stage {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        transition: opacity 0.55s ease;
+      }
+
+      .paper-stage.dimmed {
+        opacity: 1;
+      }
+
+      .initialStack .paper-stage {
+        cursor: pointer;
+      }
+
+      .showcase-mode .paper-stage,
+      .collection-mode .paper-stage {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .shade {
+        position: absolute;
+        inset: 0;
+        z-index: 18;
+        pointer-events: none;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        opacity: 0;
+        transition: opacity 0.72s ease;
+      }
+
+      .title-mode .shade {
+        opacity: 1;
+      }
+
+      .paper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        opacity: 0;
+        will-change: transform;
+        transition:
+          transform 0.62s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.48s ease;
+        transition-delay: var(--delay, 0ms);
+      }
+
+      .ready .paper {
+        opacity: 1;
+      }
+
+      .hero:not(.ready) .paper {
+        transition: none;
+      }
+
+      .paper.dragging {
+        cursor: grabbing;
+        transition: none;
+      }
+
+      .paper-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform: scale(1);
+        transform-origin: center center;
+        transition: transform 0.26s ease;
+      }
+
+      .paper:not(.dragging):hover .paper-inner {
+        transform: translateY(-12px) scale(1.035);
+      }
+
+      .paper.main .paper-inner {
+        transform: scale(1);
+      }
+
+      .paper.main:not(.dragging):hover .paper-inner {
+        transform: translateY(-12px) scale(1.035);
+      }
+
+      .opening-stack .paper.main .paper-inner {
+        transform: translateY(-18px) rotate(-0.8deg) scale(0.965);
+        transition-duration: 0.36s;
+      }
+
+      .paper-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
+
+      .paper.main {
+        cursor: pointer;
+      }
+
+      .memory-prompt {
+        position: absolute;
+        left: 50%;
+        top: 350px;
+        z-index: 36;
+        transform: translateX(-50%);
+        color: transparent;
+        background: linear-gradient(
+          100deg,
+          rgba(185, 183, 189, 0.52) 0%,
+          rgba(185, 183, 189, 0.52) 38%,
+          rgba(255, 255, 255, 0.88) 49%,
+          rgba(185, 183, 189, 0.56) 60%,
+          rgba(185, 183, 189, 0.52) 100%
+        );
+        background-size: 260% 100%;
+        background-position: 140% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        font-size: 34px;
+        font-weight: 600;
+        letter-spacing: 0;
+        animation: promptGlimmer 5s ease-in-out infinite;
+        pointer-events: none;
+        display: none;
+        transition: opacity 0.36s ease, transform 0.36s ease;
+      }
+
+      .initialStack.opening-stack .memory-prompt,
+      .scattered .memory-prompt,
+      .title-mode .memory-prompt,
+      .showcase-mode .memory-prompt,
+      .collection-mode .memory-prompt {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+
+      .folder {
+        position: absolute;
+        left: -44px;
+        bottom: -270px;
+        z-index: 28;
+        width: 2020px;
+        height: 360px;
+        border-radius: 0 116px 0 0;
+        background: #fff9dc;
+        box-shadow:
+          0 -18px 46px rgba(0, 0, 0, 0.28),
+          inset 0 14px 24px rgba(255, 255, 255, 0.58);
+        pointer-events: none;
+        display: none;
+        transition: transform 0.92s var(--paper-ease), opacity 0.58s ease;
+      }
+
+      .folder::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -34px;
+        height: 64px;
+        background: linear-gradient(180deg, rgba(255, 249, 220, 0.96), #fff9dc);
+        box-shadow: 0 -20px 36px rgba(0, 0, 0, 0.24);
+      }
+
+      .scattered .folder,
+      .title-mode .folder,
+      .showcase-mode .folder,
+      .collection-mode .folder {
+        opacity: 0;
+        transform: translateY(260px);
+      }
+
+      .title-overlay {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        z-index: 30;
+        transform: translateY(calc(-50% + 58px));
+        opacity: 0;
+        text-align: center;
+        pointer-events: none;
+        transition:
+          opacity 0.82s ease,
+          transform 0.82s var(--paper-ease);
+      }
+
+      .title-mode .title-overlay {
+        transform: translateY(calc(-50% - 10px));
+        opacity: 1;
+      }
+
+      .headline {
+        margin: 0;
+        color: #050505;
+        font-family: "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+        font-size: 78px;
+        font-weight: 780;
+        line-height: 1.14;
+        letter-spacing: 0;
+      }
+
+      .title-subtitle {
+        margin-top: 34px;
+        color: rgba(26, 26, 26, 0.74);
+        font-size: 34px;
+        font-weight: 760;
+        line-height: 1.2;
+      }
+
+      .proposal {
+        position: absolute;
+        left: 50%;
+        bottom: 58px;
+        z-index: 31;
+        transform: translate(-50%, 26px);
+        opacity: 0;
+        color: rgba(28, 28, 28, 0.46);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.55;
+        text-align: center;
+        transition:
+          opacity 0.72s ease 0.08s,
+          transform 0.72s var(--paper-ease) 0.08s;
+      }
+
+      .title-mode .proposal {
+        transform: translate(-50%, 0);
+        opacity: 0.9;
+      }
+
+      @keyframes promptGlimmer {
+        0%,
+        28% {
+          background-position: 140% 0;
+        }
+
+        88% {
+          background-position: -80% 0;
+        }
+
+        100% {
+          background-position: -80% 0;
+        }
+      }
+
+      .showcase-stage {
+        position: absolute;
+        inset: 0;
+        z-index: 34;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.48s ease;
+        background: transparent;
+        will-change: opacity;
+      }
+
+      .collection-mode .showcase-stage {
+        background: transparent;
+      }
+
+      .showcase-mode .showcase-stage,
+      .collection-mode .showcase-stage {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .showcase-copy {
+        position: absolute;
+        left: 50%;
+        top: 48px;
+        z-index: 72;
+        width: 1400px;
+        transform: translate(-50%, 28px);
+        text-align: center;
+        opacity: 0;
+        transition:
+          opacity 0.7s ease 0.08s,
+          transform 0.78s var(--paper-ease) 0.08s;
+      }
+
+      .showcase-mode .showcase-copy,
+      .collection-mode .showcase-copy {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+
+      .showcase-kicker {
+        margin: 0 0 158px;
+        color: rgba(224, 218, 211, 0.74);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .collection-mode .showcase-kicker {
+        color: var(--kicker-color);
+      }
+
+      .showcase-title {
+        margin: 0;
+        color: #fff;
+        font-family: "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+        font-size: 76px;
+        font-weight: 780;
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .collection-mode .showcase-title {
+        color: #fff;
+      }
+
+      .showcase-title--collection {
+        display: none;
+      }
+
+      .collection-mode .showcase-title--showcase {
+        display: block;
+        font-size: 76px;
+        opacity: calc(var(--fourth-title-opacity) * (1 - var(--sixth-p)));
+      }
+
+      .collection-mode .showcase-title--collection {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 172px;
+        font-size: 72px;
+        opacity: calc(var(--fifth-title-opacity) * (1 - var(--sixth-p)));
+      }
+
+      .showcase-subtitle {
+        margin: 32px 0 0;
+        color: rgba(235, 231, 226, 0.78);
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.45;
+        letter-spacing: 0;
+      }
+
+      .collection-mode .showcase-subtitle {
+        display: block;
+        opacity: calc(var(--fourth-title-opacity) * (1 - var(--sixth-p)));
+      }
+
+      .showcase-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: var(--card-width);
+        z-index: var(--card-z);
+        opacity: 0;
+        transform: translate3d(var(--card-x), calc(var(--card-y) + 190px), 0);
+        transition:
+          opacity 0.78s ease,
+          transform 0.92s var(--paper-ease);
+        transition-delay: var(--card-delay);
+        will-change: transform, opacity;
+      }
+
+      .showcase-mode .showcase-card {
+        opacity: 1;
+        transform: translate3d(var(--card-x), var(--card-y), 0);
+      }
+
+      .showcase-seen.showcase-mode .showcase-card {
+        transition-delay: 0s;
+        transition-duration: 0.18s, 0.24s;
+      }
+
+      .collection-mode .showcase-card {
+        z-index: 16;
+        transition: none;
+        transform-origin: center center;
+      }
+
+      .showcase-card-inner {
+        width: 100%;
+      }
+
+      .showcase-card:hover .showcase-card-inner {
+        animation: hoverFloat 1.45s ease-in-out infinite;
+      }
+
+      .showcase-seen.showcase-mode .question-card .showcase-card-inner {
+        animation: questionCardFloat 1.8s ease-in-out infinite;
+      }
+
+      .showcase-seen.showcase-mode .question-card {
+        cursor: pointer;
+      }
+
+      .collection-mode .question-card .showcase-card-inner {
+        animation: none;
+      }
+
+      .showcase-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
+
+      .collection-result {
+        position: absolute;
+        left: 622px;
+        top: 420px;
+        z-index: 12;
+        width: 680px;
+        opacity: var(--box-opacity);
+        transform: translate3d(var(--carry-box-x), calc(var(--fifth-y) + var(--carry-box-y)), 0)
+          scale(var(--carry-box-scale));
+        transition: none;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      .collection-mode .collection-result {
+        opacity: var(--box-opacity);
+        transform: translate3d(var(--carry-box-x), calc(var(--fifth-y) + var(--carry-box-y)), 0)
+          scale(calc(var(--carry-box-scale) + (1 - var(--collect-p)) * 0.018));
+      }
+
+      .collection-result img,
+      .collection-front-layer img {
+        display: block;
+        width: 100%;
+        height: auto;
+        -webkit-user-drag: none;
+      }
+
+      .box-back {
+        position: absolute;
+        left: 50%;
+        top: -25px;
+        z-index: 1;
+        width: 91%;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .box-front {
+        position: relative;
+        z-index: 3;
+      }
+
+      .collection-front-layer {
+        position: absolute;
+        left: 622px;
+        top: 420px;
+        z-index: 24;
+        width: 680px;
+        opacity: var(--box-opacity);
+        transform: translate3d(var(--carry-box-x), calc(var(--fifth-y) + var(--carry-box-y)), 0)
+          scale(calc(var(--carry-box-scale) + (1 - var(--collect-p)) * 0.018));
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      .collection-box-text {
+        display: none;
+        position: absolute;
+        left: 64px;
+        top: 86px;
+        z-index: 25;
+        color: #0d0d0d;
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      .collection-box-title {
+        margin: 0;
+        font-size: 43px;
+        font-weight: 790;
+        line-height: 1.35;
+        letter-spacing: 0;
+      }
+
+      .collection-box-subtitle {
+        margin: 34px 0 0;
+        color: rgba(0, 0, 0, 0.54);
+        font-size: 23px;
+        font-weight: 680;
+        letter-spacing: 0;
+      }
+
+      .collection-mode .collection-box-text {
+        opacity: var(--box-text-opacity);
+        transform: translateY(var(--box-text-y));
+      }
+
+      .new-card {
+        position: absolute;
+        z-index: 22;
+        width: var(--new-width);
+        opacity: 0;
+        transform: translate3d(860px, 540px, 0) scale(0.22) rotate(var(--new-rotate-start, 0deg));
+        transform-origin: center center;
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      .new-card-outside {
+        z-index: 28;
+      }
+
+      .new-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        -webkit-user-drag: none;
+      }
+
+      .collection-mode .new-card {
+        opacity: var(--new-card-opacity);
+        transform: translate3d(
+            calc(var(--new-x) + var(--carry-box-x)),
+            calc(var(--new-y) + var(--new-card-offset) + var(--fifth-y) + var(--carry-box-y)),
+            0
+          )
+          scale(var(--new-card-combined-scale)) rotate(var(--new-rotate));
+      }
+
+      .sixth-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 8;
+        background: transparent;
+        opacity: 1;
+        transform: translate3d(0, var(--sixth-page-y), 0);
+        pointer-events: none;
+      }
+
+      .sixth-copy {
+        position: absolute;
+        left: 50%;
+        top: 164px;
+        z-index: 36;
+        width: 760px;
+        transform: translate(-50%, calc(var(--sixth-page-y) + var(--sixth-title-y)));
+        opacity: var(--sixth-title-opacity);
+        text-align: center;
+        pointer-events: none;
+      }
+
+      .sixth-title {
+        margin: 0;
+        color: #090807;
+        font-size: 68px;
+        font-weight: 800;
+        line-height: 1.48;
+        letter-spacing: 0;
+      }
+
+      .sixth-side-card {
+        position: absolute;
+        top: 292px;
+        z-index: 20;
+        opacity: var(--sixth-p);
+        pointer-events: none;
+        will-change: transform, opacity;
+      }
+
+      .sixth-center-card {
+        display: none;
+        position: absolute;
+        left: 610px;
+        top: 462px;
+        z-index: 24;
+        width: 700px;
+        opacity: var(--sixth-p);
+        transform: translate3d(0, calc(var(--sixth-page-y) + var(--sixth-side-y)), 0);
+        pointer-events: none;
+      }
+
+      .sixth-center-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        -webkit-user-drag: none;
+      }
+
+      .sixth-side-card img {
+        display: block;
+        width: 100%;
+        height: auto;
+        -webkit-user-drag: none;
+      }
+
+      .sixth-side-card--purple {
+        left: 0;
+        width: 552px;
+        transform: translate3d(var(--sixth-purple-x), calc(var(--sixth-page-y) + var(--sixth-side-y)), 0);
+      }
+
+      .sixth-side-card--orange {
+        left: 0;
+        width: 552px;
+        transform: translate3d(var(--sixth-orange-x), calc(var(--sixth-page-y) + var(--sixth-side-y)), 0);
+      }
+
+      .seventh-panel {
+        position: absolute;
+        inset: 0;
+        z-index: 58;
+        background: transparent;
+        opacity: 1;
+        transform: translate3d(0, var(--seventh-page-y), 0);
+        pointer-events: none;
+      }
+
+      .seventh-copy {
+        position: absolute;
+        left: 116px;
+        top: 372px;
+        width: 700px;
+        transform: translate3d(0, var(--seventh-copy-y), 0);
+        opacity: var(--seventh-p);
+      }
+
+      .seventh-copy h2 {
+        margin: 0;
+        color: #0a0908;
+        font-size: 70px;
+        font-weight: 800;
+        line-height: 1.5;
+        letter-spacing: 0;
+      }
+
+      .seventh-copy p {
+        margin: 44px 0 0;
+        color: #14110f;
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 1.46;
+        letter-spacing: 0;
+      }
+
+      .seventh-folder {
+        position: absolute;
+        left: 850px;
+        top: 88px;
+        width: 1018px;
+        height: auto;
+        transform: translate3d(0, var(--seventh-folder-y), 0);
+        opacity: var(--seventh-p);
+        -webkit-user-drag: none;
+        will-change: transform, opacity;
+      }
+
+      .flow-panel {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        will-change: transform;
+      }
+
+      .page-kicker {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 46px;
+        z-index: 8;
+        margin: 0;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .flow-panel > .page-kicker {
+        display: none;
+      }
+
+      .eighth-panel {
+        z-index: 68;
+        background: transparent;
+        opacity: 1;
+        transform: translate3d(0, var(--eighth-page-y), 0);
+      }
+
+      .eighth-copy {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 118px;
+        text-align: center;
+        color: #fff7f0;
+      }
+
+      .eighth-copy h2 {
+        margin: 0;
+        font-size: 66px;
+        font-weight: 800;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .eighth-copy p {
+        margin: 35px 0 0;
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: rgba(255, 247, 240, 0.92);
+      }
+
+      .phone-demo {
+        position: absolute;
+        left: 50%;
+        top: 315px;
+        width: 408px;
+        height: 900px;
+        transform: translateX(-50%);
+        background: #f3f1ee;
+        overflow: hidden;
+      }
+
+      .phone-demo--rounded {
+        border-radius: 34px;
+        border: 9px solid rgba(0, 0, 0, 0.5);
+      }
+
+      .page-phone-image {
+        position: absolute;
+        display: block;
+        width: 444px;
+        height: auto;
+        -webkit-user-drag: none;
+        will-change: transform;
+      }
+
+      .page-phone-image--ninth {
+        left: 1222px;
+        top: 60px;
+      }
+
+      .page-embed {
+        position: absolute;
+        left: 1222px;
+        top: 60px;
+        width: 444px;
+        height: 920px;
+        border: 0;
+        border-radius: 28px;
+        background: #fff;
+        overflow: hidden;
+        pointer-events: auto;
+        will-change: transform;
+      }
+
+      .page-embed iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #fff;
+      }
+
+      .page-phone-image--tenth {
+        left: 1250px;
+        top: 76px;
+      }
+
+      .phone-status {
+        position: absolute;
+        left: 38px;
+        right: 30px;
+        top: 25px;
+        display: flex;
+        justify-content: space-between;
+        color: #fff;
+        font-size: 19px;
+        font-weight: 750;
+        z-index: 5;
+      }
+
+      .phone-status.dark {
+        color: #111;
+      }
+
+      .phone-topbar {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        top: 74px;
+        z-index: 5;
+        display: flex;
+        justify-content: space-between;
+        color: #fff;
+        font-size: 36px;
+        line-height: 1;
+      }
+
+      .phone-hero {
+        position: absolute;
+        left: 28px;
+        top: 82px;
+        width: 352px;
+        height: 210px;
+      }
+
+      .phone-hero img {
+        position: absolute;
+        display: block;
+        height: auto;
+        -webkit-user-drag: none;
+      }
+
+      .phone-hero .mini-beer {
+        left: 42px;
+        top: 0;
+        width: 170px;
+        transform: rotate(-2deg);
+      }
+
+      .phone-hero .mini-yellow {
+        left: 182px;
+        top: 14px;
+        width: 86px;
+        transform: rotate(-8deg);
+      }
+
+      .phone-hero .mini-shop {
+        left: 246px;
+        top: 8px;
+        width: 92px;
+        transform: rotate(8deg);
+      }
+
+      .phone-hero .mini-friends {
+        left: 266px;
+        top: 66px;
+        width: 88px;
+        transform: rotate(5deg);
+      }
+
+      .phone-main-card {
+        position: absolute;
+        left: 28px;
+        right: 28px;
+        top: 152px;
+        height: 176px;
+        border-radius: 0;
+        background: #f1e3da;
+        padding: 31px 26px;
+        color: #0b0a09;
+      }
+
+      .phone-main-card h3 {
+        margin: 0;
+        font-size: 26px;
+        line-height: 1.45;
+        font-weight: 790;
+      }
+
+      .phone-main-card p {
+        margin: 23px 0 0;
+        color: rgba(0, 0, 0, 0.55);
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      .phone-profile-strip {
+        position: absolute;
+        left: 15px;
+        right: 15px;
+        top: 315px;
+        height: 78px;
+        border-radius: 11px;
+        background: rgba(224, 202, 190, 0.82);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        color: #29211d;
+        font-size: 14px;
+      }
+
+      .avatar-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .badge-pill {
+        margin-left: auto;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #fff3a4;
+        color: #111;
+        font-weight: 780;
+      }
+
+      .phone-list {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 412px;
+        bottom: 0;
+        border-radius: 20px 20px 0 0;
+        background: #f7f7f7;
+        padding: 22px;
+      }
+
+      .phone-list-meta {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .phone-place-card {
+        min-height: 92px;
+        border-radius: 12px;
+        background: #fff;
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 12px;
+        padding: 12px;
+        align-items: center;
+      }
+
+      .phone-place-card img {
+        width: 68px;
+        height: 68px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .phone-place-card strong {
+        display: block;
+        font-size: 16px;
+      }
+
+      .phone-place-card span {
+        display: block;
+        margin-top: 8px;
+        color: #f15a24;
+        font-size: 13px;
+      }
+
+      .phone-note-card {
+        margin-top: 20px;
+        border-radius: 13px;
+        background: #fff;
+        padding: 18px;
+        min-height: 164px;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .phone-note-card img {
+        float: right;
+        width: 76px;
+        height: 54px;
+        margin-left: 12px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+
+      .bubble-card {
+        position: absolute;
+        z-index: 3;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 20px;
+        background: rgba(217, 200, 188, 0.56);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 22px 50px rgba(48, 28, 18, 0.16);
+        backdrop-filter: blur(18px);
+        opacity: var(--bubble-ready);
+        transform: translate3d(var(--bubble-move-x, 0px), var(--bubble-move-y, 0px), 0)
+          scale(var(--bubble-scale, 0.58));
+        transform-origin: center center;
+        transition: filter 0.24s ease;
+      }
+
+      .bubble-card--small {
+        width: 180px;
+        height: 58px;
+        border-radius: 22px;
+      }
+
+      .bubble-card--wide {
+        width: 436px;
+        height: 140px;
+      }
+
+      .bubble-card--large {
+        width: 486px;
+        height: 210px;
+      }
+
+      .bubble-card--xl {
+        width: 482px;
+        height: 210px;
+      }
+
+      .page-ninth,
+      .page-tenth,
+      .page-eleventh {
+        transform: translate3d(0, var(--page-y), 0);
+        opacity: 1;
+      }
+
+      .page-ninth {
+        --page-y: var(--ninth-page-y);
+        --page-p: var(--ninth-p);
+        z-index: 78;
+        background: transparent;
+      }
+
+      .page-tenth {
+        --page-y: var(--tenth-page-y);
+        --page-p: var(--tenth-p);
+        z-index: 88;
+        background: transparent;
+      }
+
+      .page-eleventh {
+        --page-y: var(--eleventh-page-y);
+        --page-p: var(--eleventh-p);
+        z-index: 98;
+        background: transparent;
+      }
+
+      .split-copy {
+        position: absolute;
+        left: 190px;
+        top: 426px;
+        color: #080706;
+      }
+
+      .split-copy h2 {
+        margin: 0;
+        font-size: 66px;
+        line-height: 1.18;
+        font-weight: 800;
+      }
+
+      .split-copy p {
+        margin: 35px 0 0;
+        font-size: 28px;
+        line-height: 1.35;
+        font-weight: 500;
+      }
+
+      .create-modal {
+        position: absolute;
+        left: 26px;
+        right: 26px;
+        bottom: 26px;
+        height: 466px;
+        border-radius: 16px;
+        background: linear-gradient(#fff, #eef9ff);
+        box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.12);
+        padding: 42px 24px;
+        text-align: center;
+      }
+
+      .create-modal::before {
+        content: "×";
+        position: absolute;
+        right: 22px;
+        top: 18px;
+        font-size: 26px;
+      }
+
+      .create-carousel {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        margin-bottom: 36px;
+      }
+
+      .create-carousel .book-cover {
+        width: 92px;
+        height: 190px;
+        border-radius: 9px;
+        background: linear-gradient(145deg, #7c4a2d, #e5d6c8);
+        transform: rotate(-8deg);
+      }
+
+      .create-carousel .book-cover:nth-child(2) {
+        width: 112px;
+        transform: rotate(0deg);
+        background: #e5e5e5;
+      }
+
+      .create-carousel .book-cover:nth-child(3) {
+        transform: rotate(8deg);
+        background: linear-gradient(145deg, #b28a62, #e7f1f4);
+      }
+
+      .create-modal h3 {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.8;
+      }
+
+      .create-modal button {
+        margin-top: 38px;
+        width: 190px;
+        height: 48px;
+        border: 0;
+        border-radius: 999px;
+        background: #ff5d33;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 760;
+      }
+
+      .profile-phone {
+        position: absolute;
+        left: 1260px;
+        top: 78px;
+        width: 448px;
+        height: 990px;
+        border-radius: 34px;
+        background: linear-gradient(#d9eff8, #fff 38%);
+        overflow: hidden;
+        box-shadow: 0 22px 42px rgba(0, 0, 0, 0.18);
+      }
+
+      .profile-phone .phone-status {
+        color: #0c0c0c;
+      }
+
+      .profile-top {
+        margin-top: 130px;
+        text-align: center;
+      }
+
+      .profile-top img {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .profile-top h3 {
+        margin: 18px 0 0;
+        font-size: 25px;
+      }
+
+      .profile-top p {
+        margin: 22px auto 0;
+        width: 300px;
+        color: rgba(0, 0, 0, 0.48);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .profile-stats {
+        display: flex;
+        justify-content: center;
+        gap: 34px;
+        margin-top: 28px;
+        font-size: 16px;
+        font-weight: 760;
+      }
+
+      .achievement-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 26px 26px 0;
+      }
+
+      .achievement {
+        height: 92px;
+        border-radius: 10px;
+        background: rgba(247, 247, 247, 0.86);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.62);
+      }
+
+      .profile-section {
+        margin: 34px 26px 0;
+      }
+
+      .profile-section h4 {
+        margin: 0 0 15px;
+        font-size: 22px;
+      }
+
+      .special-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .special-tile {
+        height: 164px;
+        border-radius: 9px;
+        overflow: hidden;
+        background: #333;
+        position: relative;
+      }
+
+      .special-tile img,
+      .feed-tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .special-tile span {
+        position: absolute;
+        left: 9px;
+        right: 9px;
+        bottom: 9px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.25;
+      }
+
+      .tab-row {
+        display: flex;
+        gap: 28px;
+        margin: 30px 26px 18px;
+        font-size: 22px;
+        font-weight: 780;
+      }
+
+      .feed-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0 26px;
+      }
+
+      .feed-tile {
+        height: 168px;
+        border-radius: 9px;
+        overflow: hidden;
+      }
+
+      .orange-copy {
+        position: absolute;
+        left: 190px;
+        top: 430px;
+        color: #fff;
+      }
+
+      .orange-copy h2 {
+        margin: 0;
+        font-size: 70px;
+        line-height: 1.15;
+        font-weight: 800;
+      }
+
+      .orange-copy p {
+        margin: 34px 0 0;
+        color: rgba(255, 255, 255, 0.94);
+        font-size: 26px;
+        line-height: 1.55;
+      }
+
+      .eleventh-copy {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 140px;
+        text-align: center;
+        color: #fff7f0;
+      }
+
+      .eleventh-copy h2 {
+        margin: 0;
+        font-size: 62px;
+        line-height: 1.55;
+        font-weight: 800;
+      }
+
+      .eleventh-copy p {
+        margin: 28px 0 0;
+        color: rgba(255, 247, 240, 0.72);
+        font-size: 25px;
+      }
+
+      .tool-cards {
+        position: absolute;
+        left: 200px;
+        right: 200px;
+        top: 470px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 92px;
+      }
+
+      .tool-card {
+        height: 538px;
+        background: #d9d9d9;
+        display: grid;
+        place-items: center;
+        color: #0b0b0b;
+        font-size: 27px;
+        font-weight: 500;
+      }
+
+      @keyframes hoverFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+
+      @keyframes questionCardFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes gatherToBox {
+        0% {
+          opacity: 1;
+          transform: translate3d(var(--card-x), var(--card-y), 0) scale(1);
+        }
+
+        62% {
+          opacity: 1;
+          transform: translate3d(var(--merge-x, 770px), 438px, 0) scale(var(--merge-scale, 0.44));
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate3d(858px, 486px, 0) scale(0.12);
+        }
+      }
+
+      @keyframes boxPulseIn {
+        0% {
+          opacity: 0;
+          transform: translate3d(0, 86px, 0) scale(0.84);
+        }
+
+        36% {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1.035);
+        }
+
+        52% {
+          transform: translate3d(0, 0, 0) scale(0.972);
+        }
+
+        74%,
+        100% {
+          opacity: 1;
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+      }
+
+      @keyframes popFromBox {
+        0% {
+          opacity: 0;
+          transform: translate3d(870px, 492px, 0) scale(0.2) rotate(var(--new-rotate-start, 0deg));
+        }
+
+        44% {
+          opacity: 1;
+          transform: translate3d(var(--new-x), calc(var(--new-y) - 26px), 0) scale(1.08)
+            rotate(var(--new-rotate));
+        }
+
+        100% {
+          opacity: 1;
+          transform: translate3d(var(--new-x), var(--new-y), 0) scale(1) rotate(var(--new-rotate));
+        }
+      }
+
+      @keyframes textFloatIn {
+        0% {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-aspect-ratio: 16 / 9) {
+        .headline {
+          font-size: 74px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hero" id="hero">
+      <div class="stage" id="stage">
+        <div class="label label-left">Special Collection</div>
+        <div class="label label-right">· 生活特辑</div>
+        <section class="paper-stage" id="paperStage" aria-label="生活特辑纸片">
+          <article class="paper yellow" data-id="roommate" aria-label="室友纸片">
+            <div class="paper-inner">
+              <img class="paper-img" src="assets/web-v3-yellow.png" alt="" />
+            </div>
+          </article>
+
+          <article class="paper grid" data-id="friend" aria-label="朋友问去哪吃纸片">
+            <div class="paper-inner">
+              <img class="paper-img" src="assets/web-v3-grid.png" alt="" />
+            </div>
+          </article>
+
+          <article class="paper white" data-id="night" aria-label="加班夜宵纸片">
+            <div class="paper-inner">
+              <img class="paper-img" src="assets/web-v3-night.png" alt="" />
+            </div>
+          </article>
+
+          <article class="paper main" data-id="main" aria-label="主纸条">
+            <div class="paper-inner">
+              <img class="paper-img" src="assets/web-v3-main.png" alt="" />
+            </div>
+          </article>
+        </section>
+
+        <div class="shade"></div>
+        <div class="title-overlay" aria-hidden="true">
+          <h1 class="headline">有些“特别之处”，只有你知道</h1>
+          <div class="title-subtitle">大众点评 · 生活特辑</div>
+        </div>
+        <div class="proposal">by 吴韵佳</div>
+        <div class="bottom-label">只有你知道的 · 特别之处</div>
+        <div class="page-indicator" id="pageIndicator" aria-label="当前页码">1/11</div>
+        <div class="memory-prompt">点击查看特别记忆</div>
+        <div class="folder" aria-hidden="true"></div>
+
+        <section class="showcase-stage" aria-label="生活特辑定义展示">
+          <div class="showcase-copy">
+            <p class="showcase-kicker">大众点评 · 生活特辑</p>
+            <h2 class="showcase-title showcase-title--showcase">内容很多，但人被淹没了</h2>
+            <h2 class="showcase-title showcase-title--collection">把内容重新聚到一个人身上</h2>
+            <p class="showcase-subtitle">
+              这些零散的体会和分享，一直存在，但缺少一个以“我”为中心的出口
+            </p>
+          </div>
+
+          <article
+            class="showcase-card"
+            style="--card-x: 172px; --card-y: 518px; --card-width: 590px; --card-z: 1; --card-delay: 0.04s; --merge-delay: 0s; --merge-x: 620px; --merge-y: 520px; --merge-scale: 0.42"
+            aria-label="点评卡片"
+          >
+            <div class="showcase-card-inner">
+              <img src="assets/group-56.png" alt="" />
+            </div>
+          </article>
+
+          <article
+            class="showcase-card"
+            style="--card-x: 1172px; --card-y: 430px; --card-width: 338px; --card-z: 4; --card-delay: 0.18s; --merge-delay: 0.08s; --merge-x: 774px; --merge-y: 520px; --merge-scale: 0.66"
+            aria-label="美食推荐卡片"
+          >
+            <div class="showcase-card-inner">
+              <img src="assets/group-57.png" alt="" />
+            </div>
+          </article>
+
+          <article
+            class="showcase-card"
+            style="--card-x: 1400px; --card-y: 566px; --card-width: 414px; --card-z: 2; --card-delay: 0.3s; --merge-delay: 0.14s; --merge-x: 836px; --merge-y: 542px; --merge-scale: 0.58"
+            aria-label="店铺笔记卡片"
+          >
+            <div class="showcase-card-inner">
+              <img src="assets/group-58.png" alt="" />
+            </div>
+          </article>
+
+          <article
+            class="showcase-card question-card"
+            style="--card-x: 752px; --card-y: 476px; --card-width: 432px; --card-z: 6; --card-delay: 0.36s; --merge-delay: 0.2s; --merge-x: 704px; --merge-y: 490px; --merge-scale: 0.72"
+            aria-label="未知地点卡片"
+          >
+            <div class="showcase-card-inner">
+              <img src="assets/web-v3-circle.png" alt="" />
+            </div>
+          </article>
+
+          <article class="collection-result" aria-label="汇聚后的生活特辑卡片">
+            <img class="box-back" src="assets/web-v3-box-back.png" alt="" />
+          </article>
+
+          <article class="collection-front-layer" aria-hidden="true">
+            <img class="box-front" src="assets/web-v3-box-front.png" alt="" />
+            <div class="collection-box-text">
+              <h3 class="collection-box-title">大学毕业前，<br />和室友吃完的大学路</h3>
+              <p class="collection-box-subtitle">四年，四条胃，一家一家吃过来的。</p>
+            </div>
+          </article>
+
+          <article
+            class="new-card"
+            style="--new-x: 718px; --new-y: 406px; --new-width: 286px; --new-rotate: -3deg; --new-rotate-start: -14deg; --new-delay: 0.92s"
+            aria-label="弹出的啤酒小卡"
+          >
+            <img src="assets/web-v3-small-left1.png" alt="" />
+          </article>
+
+          <article
+            class="new-card"
+            style="--new-x: 936px; --new-y: 436px; --new-width: 154px; --new-rotate: -8deg; --new-rotate-start: 10deg; --new-delay: 1.02s"
+            aria-label="弹出的黄色小卡"
+          >
+            <img src="assets/web-v3-small-left2.png" alt="" />
+          </article>
+
+          <article
+            class="new-card"
+            style="--new-x: 1064px; --new-y: 414px; --new-width: 158px; --new-rotate: 10deg; --new-rotate-start: -10deg; --new-delay: 1.12s"
+            aria-label="弹出的店铺小卡"
+          >
+            <img src="assets/web-v3-small-right1.png" alt="" />
+          </article>
+
+          <article
+            class="new-card new-card-outside"
+            style="--new-x: 1146px; --new-y: 480px; --new-width: 144px; --new-rotate: 6deg; --new-rotate-start: 16deg; --new-delay: 1.22s"
+            aria-label="弹出的合影小卡"
+          >
+            <img src="assets/web-v3-small-single.png" alt="" />
+          </article>
+
+          <section class="sixth-panel" aria-hidden="true"></section>
+
+          <section class="sixth-copy" aria-label="翻开特辑标题">
+            <h2 class="sixth-title">翻开特辑<br />走进一个人的生活</h2>
+          </section>
+
+          <article class="sixth-side-card sixth-side-card--purple" aria-label="紫色生活特辑卡片">
+            <img src="assets/web-v3-purple-box.png" alt="" />
+          </article>
+
+          <article class="sixth-side-card sixth-side-card--orange" aria-label="橙色生活特辑卡片">
+            <img src="assets/web-v3-orange-box.png" alt="" />
+          </article>
+
+          <section class="seventh-panel" aria-label="生活特辑定义展示">
+            <div class="seventh-copy">
+              <h2>让“真实去过的人”<br />定义“值得去的地方”</h2>
+              <p>生活特辑是生活家把自己去过、有态度、觉得<br />值得说的地方，挑出来装订后分享出来</p>
+            </div>
+            <img class="seventh-folder" src="assets/web-v3-kraft-folder.png" alt="" />
+          </section>
+
+          <section class="flow-panel eighth-panel" aria-label="想到一块儿去了">
+            <p class="page-kicker">大众点评 · 生活特辑</p>
+            <div class="eighth-copy">
+              <h2>有人和你想到一块儿去了</h2>
+              <p>一个人把自己的生活片段，轻轻递给另一个人。如果对方也觉得不错，那你们想到一块儿去了</p>
+            </div>
+
+            <div class="phone-demo" aria-label="生活特辑手机预览">
+              <div class="phone-status"><span>9:31</span><span>▮▮ ︿ ▰</span></div>
+              <div class="phone-topbar"><span>‹</span><span>⇧</span></div>
+              <div class="phone-hero">
+                <img class="mini-beer" src="assets/web-v3-small-left1.png" alt="" />
+                <img class="mini-yellow" src="assets/web-v3-small-left2.png" alt="" />
+                <img class="mini-shop" src="assets/web-v3-small-right1.png" alt="" />
+                <img class="mini-friends" src="assets/web-v3-small-single.png" alt="" />
+              </div>
+              <div class="phone-main-card">
+                <h3>大学毕业前，<br />和室友吃完的大学路</h3>
+                <p>四年，四条胃，一家一家吃过来的。</p>
+              </div>
+              <div class="phone-profile-strip">
+                <img class="avatar-dot" src="assets/web-v3-author-name.png" alt="" />
+                <strong>奥利嘎嘎</strong>
+                <span>大学生｜吃辣星人</span>
+                <span class="badge-pill">95%</span>
+              </div>
+              <div class="phone-list">
+                <div class="phone-list-meta"><span>12个地点</span><span>更新于2026年7月7日</span></div>
+                <div class="phone-place-card">
+                  <img src="assets/web-v3-small-single.png" alt="" />
+                  <div><strong>草根夜档·潮汕老字号·小炒排挡</strong><span>3.9星　¥107/人　1.5km</span></div>
+                </div>
+                <div class="phone-note-card">
+                  <img src="assets/web-v3-small-left1.png" alt="" />
+                  每次聚餐都说换一家，最后还是拐回这家排挡。安琪拉：老板真的很有人情味
+                </div>
+              </div>
+            </div>
+
+            <div class="bubble-card bubble-card--small" style="left: 530px; top: 355px; --bubble-from-x: 390px; --bubble-from-y: 505px; --bubble-ready: 0"></div>
+            <div class="bubble-card bubble-card--wide" style="left: 220px; top: 492px; --bubble-from-x: 610px; --bubble-from-y: 470px; --bubble-ready: 0"></div>
+            <div class="bubble-card bubble-card--large" style="left: 346px; top: 756px; --bubble-from-x: 626px; --bubble-from-y: 500px; --bubble-ready: 0"></div>
+            <div class="bubble-card bubble-card--small" style="left: 1268px; top: 432px; width: 236px; --bubble-from-x: 1010px; --bubble-from-y: 480px; --bubble-ready: 0"></div>
+            <div class="bubble-card bubble-card--xl" style="left: 1207px; top: 562px; --bubble-from-x: 1034px; --bubble-from-y: 516px; --bubble-ready: 0"></div>
+          </section>
+
+          <section class="flow-panel page-ninth" aria-label="创建你的生活特辑">
+            <p class="page-kicker" style="color: rgba(40, 35, 30, 0.72)">大众点评 · 生活特辑</p>
+            <div class="split-copy">
+              <h2>创建你的生活特辑</h2>
+              <p>把你的“特别之处”，装订成册</p>
+            </div>
+            <div class="page-embed" aria-label="内嵌创建页面预览">
+              <iframe src="http://127.0.0.1:5174/" title="创建你的生活特辑预览"></iframe>
+            </div>
+          </section>
+
+          <section class="flow-panel page-tenth" aria-label="你的特辑更好地表达自己">
+            <p class="page-kicker">大众点评 · 生活特辑</p>
+            <div class="orange-copy">
+              <h2>你的特辑——更好的表达自己</h2>
+              <p>每一次“去过”和“觉得好”，都是你的独家坐标。<br />把它们整理成册，放在个人主页上——你的判断，有了自己的位置。</p>
+            </div>
+            <img class="page-phone-image page-phone-image--tenth" src="assets/web-v3-page10-ref.png" alt="" />
+          </section>
+
+          <section class="flow-panel page-eleventh" aria-label="消费决策工具">
+            <p class="page-kicker">大众点评 · 生活特辑</p>
+            <div class="eleventh-copy">
+              <h2>不只是“创作者的表达工具”<br />更是“大众点评消费决策工具”</h2>
+              <p>是让每一次真实去过，都能帮下一个相似的人少纠结一点</p>
+            </div>
+            <div class="tool-cards">
+              <div class="tool-card">信息流</div>
+              <div class="tool-card">搜索</div>
+              <div class="tool-card">地图</div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const DESIGN = { width: 1920, height: 1080 };
+      const VISIBILITY_PAD = 92;
+      const stage = document.getElementById("stage");
+      const hero = document.getElementById("hero");
+      const paperStage = document.getElementById("paperStage");
+      const pageIndicator = document.getElementById("pageIndicator");
+      const showcaseStage = document.querySelector(".showcase-stage");
+      const papers = Array.from(document.querySelectorAll(".paper"));
+      const showcaseCards = Array.from(document.querySelectorAll(".showcase-card"));
+      const showcaseImages = Array.from(document.querySelectorAll(".showcase-card img"));
+      const questionCard = document.querySelector(".question-card");
+      const bubbleCards = Array.from(document.querySelectorAll(".bubble-card"));
+      const rootStyle = document.documentElement.style;
+      const rootVarCache = new Map();
+
+      const collectTargets = [
+        { x: 880, y: 592, scale: 0.18 },
+        { x: 862, y: 562, scale: 0.28 },
+        { x: 848, y: 580, scale: 0.22 },
+        { x: 752, y: 476, scale: 1 }
+      ];
+
+      const collectZ = [13, 17, 14, 19];
+
+      // Coordinates are authored in the 1920x1080 design space and scaled as a stage.
+      const notes = {
+        roommate: {
+          size: [549, 500],
+          initial: { x: 686, y: 342, rotate: -12, z: 2 },
+          scattered: { x: 96, y: 284, rotate: -12, z: 2 },
+          delay: 180
+        },
+        friend: {
+          size: [387, 400],
+          initial: { x: 766, y: 392, rotate: 7, z: 4 },
+          scattered: { x: 1442, y: 646, rotate: 7, z: 4 },
+          delay: 420
+        },
+        night: {
+          size: [486, 423],
+          initial: { x: 717, y: 380, rotate: -4, z: 3 },
+          scattered: { x: 1338, y: 112, rotate: -4, z: 3 },
+          delay: 300
+        },
+        main: {
+          size: [702, 583],
+          initial: { x: 609, y: 300, rotate: 0, z: 10 },
+          scattered: { x: 609, y: 284, rotate: 0, z: 10 },
+          title: { x: 609, y: 284, rotate: 0, z: 10 },
+          delay: 0
+        }
+      };
+
+      let mode = "initialStack";
+      let hasOpened = false;
+      let scale = 1;
+      let activeDrag = null;
+      let zPeak = 80;
+      let lastScrollY = window.scrollY;
+      let openingTimer = null;
+      let scrollFrame = 0;
+      let hasSeenShowcase = false;
+      let showcaseSeenTimer = null;
+      let clickScrollFrame = 0;
+      let suppressClickUntil = 0;
+      let gestureLockUntil = 0;
+      let isPageAnimating = false;
+      let currentNewCardScale = 0.36;
+      let lastBackgroundKey = "";
+      let lastCollectionKey = "";
+      let lastSixthKey = "";
+      let lastSeventhKey = "";
+      let lastEighthKey = "";
+      let wheelGestureDelta = 0;
+      let wheelGestureTimer = 0;
+      let wheelGestureTriggered = false;
+      let touchStartY = 0;
+      let touchStartX = 0;
+      let touchStarted = false;
+
+      function setRootVar(name, value) {
+        const next = String(value);
+        if (rootVarCache.get(name) === next) return;
+        rootVarCache.set(name, next);
+        rootStyle.setProperty(name, next);
+      }
+
+      function clamp01(value) {
+        return Math.max(0, Math.min(1, value));
+      }
+
+      function smooth(value) {
+        const x = clamp01(value);
+        return x * x * (3 - 2 * x);
+      }
+
+      function mix(a, b, progress) {
+        return Math.round(a + (b - a) * progress);
+      }
+
+      const pageBackgrounds = {
+        1: "#E1D8CC",
+        2: "#E1D8CC",
+        3: "#73472D",
+        4: "#FF6600",
+        5: "#F9D959",
+        6: "#F9F3E4",
+        7: "#73472D",
+        8: "#F9F3E4",
+        9: "#FF6600",
+        10: "#73472D",
+        11: "#E1D8CC"
+      };
+
+      function updateFixedBackground(scrollY) {
+        const page = getPageNumber(scrollY);
+        const backgroundKey = `${page}`;
+        if (backgroundKey === lastBackgroundKey) return;
+        lastBackgroundKey = backgroundKey;
+
+        setRootVar("--page-bg", pageBackgrounds[page] || pageBackgrounds[6]);
+      }
+
+      function easeInOutCubic(progress) {
+        const p = clamp01(progress);
+        return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      }
+
+      function smoothScrollTo(targetY, duration = 820) {
+        if (clickScrollFrame) {
+          window.cancelAnimationFrame(clickScrollFrame);
+          clickScrollFrame = 0;
+        }
+
+        const startY = window.scrollY;
+        const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const endY = Math.max(0, Math.min(maxY, targetY));
+        const distance = endY - startY;
+        if (Math.abs(distance) < 2) {
+          isPageAnimating = false;
+          wheelGestureDelta = 0;
+          wheelGestureTriggered = false;
+          return;
+        }
+
+        isPageAnimating = true;
+        gestureLockUntil = performance.now() + duration + 320;
+        const startTime = performance.now();
+        const step = (now) => {
+          const elapsed = now - startTime;
+          const progress = clamp01(elapsed / duration);
+          window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+          if (progress < 1) {
+            clickScrollFrame = window.requestAnimationFrame(step);
+          } else {
+            clickScrollFrame = 0;
+            isPageAnimating = false;
+            wheelGestureDelta = 0;
+          }
+        };
+
+        clickScrollFrame = window.requestAnimationFrame(step);
+      }
+
+      function getScrollStops() {
+        const h = window.innerHeight;
+        const collectionEnd = h * 2.9;
+        const postPageSpan = h * 1.18;
+        return [
+          0,
+          h * 0.42,
+          h * 1.32,
+          collectionEnd,
+          collectionEnd + postPageSpan,
+          collectionEnd + postPageSpan * 2,
+          collectionEnd + postPageSpan * 3,
+          collectionEnd + postPageSpan * 4,
+          collectionEnd + postPageSpan * 5,
+          collectionEnd + postPageSpan * 6
+        ];
+      }
+
+      function scrollToNextScreen() {
+        if (isPageAnimating) return;
+        const h = window.innerHeight;
+        const collectionEnd = h * 2.9;
+
+        if (mode === "initialStack") {
+          openStackGently();
+          smoothScrollTo(h * 0.42, 760);
+          return;
+        }
+
+        if (mode === "showcaseMode") {
+          smoothScrollTo(collectionEnd, 1180);
+          return;
+        }
+
+        if (mode === "collectionMode" && window.scrollY < collectionEnd - 26) {
+          smoothScrollTo(collectionEnd, 1180);
+          return;
+        }
+
+        const stops = getScrollStops();
+        const next = stops.find((stop) => stop > window.scrollY + 30);
+        smoothScrollTo(next ?? document.documentElement.scrollHeight - window.innerHeight, 820);
+      }
+
+      function scrollToPreviousScreen() {
+        if (isPageAnimating) return;
+        const stops = getScrollStops();
+        const previous = [...stops].reverse().find((stop) => stop < window.scrollY - 30);
+        smoothScrollTo(previous ?? 0, 760);
+      }
+
+      function triggerGestureNavigation(direction) {
+        const now = performance.now();
+        if (isPageAnimating || now < gestureLockUntil) return;
+        wheelGestureDelta = 0;
+
+        if (direction > 0) {
+          scrollToNextScreen();
+        } else {
+          scrollToPreviousScreen();
+        }
+      }
+
+      function updateSixthProgress(rawProgress) {
+        const progressKey = rawProgress.toFixed(3);
+        if (progressKey === lastSixthKey) return;
+        lastSixthKey = progressKey;
+
+        const p = smooth(rawProgress);
+        const kicker = {
+          r: mix(255, 74, p),
+          g: mix(226, 66, p),
+          b: mix(205, 49, p),
+          a: 0.74
+        };
+
+        setRootVar(
+          "--kicker-color",
+          `rgba(${kicker.r}, ${kicker.g}, ${kicker.b}, ${kicker.a})`
+        );
+        setRootVar("--sixth-p", p.toFixed(3));
+        setRootVar("--sixth-title-opacity", smooth((rawProgress - 0.16) / 0.42).toFixed(3));
+        setRootVar("--sixth-title-y", `${(1 - p) * 132}px`);
+        setRootVar("--sixth-side-y", `${(1 - p) * 96}px`);
+        setRootVar("--sixth-purple-x", `${-710 + p * 678}px`);
+        setRootVar("--sixth-orange-x", `${1940 - p * 540}px`);
+      }
+
+      function updateSeventhProgress(rawProgress) {
+        const progressKey = rawProgress.toFixed(3);
+        if (progressKey === lastSeventhKey) return;
+        lastSeventhKey = progressKey;
+
+        const p = smooth(rawProgress);
+        setRootVar("--seventh-p", p.toFixed(3));
+        setRootVar("--seventh-copy-y", `${(1 - p) * 90}px`);
+        setRootVar("--seventh-folder-y", `${(1 - p) * 84}px`);
+        setRootVar("--kicker-color", "rgba(74, 66, 49, 0.74)");
+      }
+
+      function updateEighthProgress(rawProgress) {
+        const progressKey = rawProgress.toFixed(3);
+        if (progressKey === lastEighthKey) return;
+        lastEighthKey = progressKey;
+
+        const p = smooth(rawProgress);
+        setRootVar("--eighth-p", p.toFixed(3));
+        setRootVar("--kicker-color", "rgba(255, 247, 240, 0.62)");
+
+        bubbleCards.forEach((bubble, index) => {
+          const staggered = smooth((rawProgress - 0.62 - index * 0.045) / 0.22);
+          const fromX = Number.parseFloat(bubble.style.getPropertyValue("--bubble-from-x")) || 0;
+          const fromY = Number.parseFloat(bubble.style.getPropertyValue("--bubble-from-y")) || 0;
+          bubble.style.setProperty("--bubble-ready", staggered.toFixed(3));
+          bubble.style.setProperty("--bubble-move-x", `${fromX * (1 - staggered)}px`);
+          bubble.style.setProperty("--bubble-move-y", `${fromY * (1 - staggered)}px`);
+          bubble.style.setProperty("--bubble-scale", (0.58 + staggered * 0.42).toFixed(3));
+        });
+      }
+
+      function updatePlainPageProgress(name, rawProgress) {
+        const p = smooth(rawProgress);
+        setRootVar(`--${name}-p`, p.toFixed(3));
+      }
+
+      function getPageNumber(scrollY) {
+        const h = window.innerHeight;
+        const collectionStart = h * 1.68;
+        const collectionEnd = h * 2.9;
+        const postPageSpan = h * 1.18;
+
+        if (scrollY < h * 0.36) return 1;
+        if (scrollY < h * 1.28) return 2;
+        if (scrollY < collectionStart + (collectionEnd - collectionStart) * 0.58) return 3;
+        if (scrollY < collectionEnd) return 4;
+
+        return Math.min(11, 5 + Math.floor((scrollY - collectionEnd) / postPageSpan));
+      }
+
+      function updatePageIndicator(scrollY) {
+        pageIndicator.textContent = `${getPageNumber(scrollY)}/11`;
+      }
+
+      function updatePostFlow(designScroll) {
+        const carryProgress = clamp01(designScroll / DESIGN.height);
+        const carryExtra = Math.max(0, designScroll - DESIGN.height);
+        const carryX = -12 * carryProgress;
+        const carryY = 60 * carryProgress - carryExtra;
+        const carryScale = 1 + carryProgress * 0.029;
+        const newCombinedScale = currentNewCardScale * carryScale;
+
+        setRootVar("--post-flow-y", `${designScroll}px`);
+        setRootVar("--carry-box-x", `${carryX}px`);
+        setRootVar("--carry-box-y", `${carryY}px`);
+        setRootVar("--carry-box-scale", carryScale.toFixed(3));
+        setRootVar("--new-card-combined-scale", newCombinedScale.toFixed(3));
+        setRootVar("--sixth-page-y", `${1080 - designScroll}px`);
+        setRootVar("--seventh-page-y", `${2160 - designScroll}px`);
+        setRootVar("--eighth-page-y", `${3240 - designScroll}px`);
+        setRootVar("--ninth-page-y", `${4320 - designScroll}px`);
+        setRootVar("--tenth-page-y", `${5400 - designScroll}px`);
+        setRootVar("--eleventh-page-y", `${6480 - designScroll}px`);
+      }
+
+      function updateCollectionProgress(rawProgress) {
+        const progressKey = rawProgress.toFixed(3);
+        if (progressKey === lastCollectionKey) return;
+        lastCollectionKey = progressKey;
+
+        const p = smooth(rawProgress);
+        const reveal = smooth((rawProgress - 0.56) / 0.24);
+        const pageY = 0;
+        const cardP = smooth((rawProgress - 0.05) / 0.56);
+        const oldFade = 1 - smooth((rawProgress - 0.56) / 0.24);
+        const newPop = smooth((rawProgress - 0.64) / 0.28);
+        const boxText = smooth((rawProgress - 0.68) / 0.24);
+        const fourthTitle = 1 - smooth((rawProgress - 0.58) / 0.22);
+        const fifthTitle = smooth((rawProgress - 0.62) / 0.24);
+
+        setRootVar("--collect-p", p.toFixed(3));
+        setRootVar("--kicker-color", rawProgress < 0.58 ? "rgba(224, 218, 211, 0.74)" : "rgba(255, 226, 205, 0.74)");
+        setRootVar("--fifth-y", `${pageY}px`);
+        setRootVar("--old-card-y", `${p * 410}px`);
+        setRootVar("--old-card-scale", (1 - p * 0.58).toFixed(3));
+        setRootVar("--old-card-opacity", oldFade.toFixed(3));
+        setRootVar("--box-opacity", reveal.toFixed(3));
+        setRootVar("--box-text-opacity", boxText.toFixed(3));
+        setRootVar("--box-text-y", `${(1 - boxText) * 24}px`);
+        setRootVar("--new-card-offset", `${(1 - newPop) * 128}px`);
+        currentNewCardScale = 0.36 + newPop * 0.64;
+        setRootVar("--new-card-scale", currentNewCardScale.toFixed(3));
+        setRootVar("--new-card-combined-scale", currentNewCardScale.toFixed(3));
+        setRootVar("--new-card-opacity", newPop.toFixed(3));
+        setRootVar("--fourth-title-opacity", fourthTitle.toFixed(3));
+        setRootVar("--fifth-title-opacity", fifthTitle.toFixed(3));
+        setRootVar("--sixth-p", "0");
+        setRootVar("--sixth-title-opacity", "0");
+        setRootVar("--sixth-title-y", "132px");
+        setRootVar("--sixth-side-y", "96px");
+        setRootVar("--sixth-purple-x", "-710px");
+        setRootVar("--sixth-orange-x", "1940px");
+        setRootVar("--seventh-p", "0");
+        setRootVar("--seventh-copy-y", "90px");
+        setRootVar("--seventh-folder-y", "84px");
+        setRootVar("--eighth-p", "0");
+        setRootVar("--ninth-p", "0");
+        setRootVar("--tenth-p", "0");
+        setRootVar("--eleventh-p", "0");
+        bubbleCards.forEach((bubble) => {
+          const fromX = Number.parseFloat(bubble.style.getPropertyValue("--bubble-from-x")) || 0;
+          const fromY = Number.parseFloat(bubble.style.getPropertyValue("--bubble-from-y")) || 0;
+          bubble.style.setProperty("--bubble-ready", "0");
+          bubble.style.setProperty("--bubble-move-x", `${fromX}px`);
+          bubble.style.setProperty("--bubble-move-y", `${fromY}px`);
+          bubble.style.setProperty("--bubble-scale", "0.58");
+        });
+
+        showcaseCards.forEach((card, index) => {
+          if (rawProgress <= 0) {
+            card.style.opacity = "";
+            card.style.transform = "";
+            card.style.zIndex = "";
+            return;
+          }
+
+          const startX = Number.parseFloat(card.style.getPropertyValue("--card-x")) || 0;
+          const startY = Number.parseFloat(card.style.getPropertyValue("--card-y")) || 0;
+          const target = collectTargets[index] || collectTargets[0];
+          const targetX = target.x;
+          const targetY = target.y + pageY;
+          const x = startX + (targetX - startX) * cardP;
+          const y = startY + (targetY - startY) * cardP;
+          const scale = 1 + (target.scale - 1) * cardP;
+
+          card.style.opacity = oldFade.toFixed(3);
+          card.style.zIndex = String(collectZ[index] || 13);
+          card.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale.toFixed(3)})`;
+        });
+      }
+
+      const state = Object.fromEntries(
+        Object.entries(notes).map(([id, note]) => [id, { ...note.initial }])
+      );
+
+      function updateScale() {
+        scale = Math.max(window.innerWidth / DESIGN.width, window.innerHeight / DESIGN.height);
+        stage.style.setProperty("--scale", scale);
+      }
+
+      function clampPosition(id, x, y) {
+        const [width, height] = notes[id].size;
+        return {
+          x: Math.min(DESIGN.width - VISIBILITY_PAD, Math.max(-width + VISIBILITY_PAD, x)),
+          y: Math.min(DESIGN.height - VISIBILITY_PAD, Math.max(-height + VISIBILITY_PAD, y))
+        };
+      }
+
+      function placePaper(el, pose, delay = 0) {
+        const id = el.dataset.id;
+        const [width, height] = notes[id].size;
+        el.style.width = `${width}px`;
+        el.style.height = `${height}px`;
+        el.style.zIndex = pose.z;
+        el.style.setProperty("--delay", `${delay}ms`);
+        el.style.transform = `translate3d(${pose.x}px, ${pose.y}px, 0) rotate(${pose.rotate}deg)`;
+      }
+
+      function render(delayed = false) {
+        paperStage.classList.toggle("dimmed", mode === "titleMode");
+        hero.classList.toggle("initialStack", mode === "initialStack");
+        hero.classList.toggle("scattered", mode === "scattered");
+        hero.classList.toggle("title-mode", mode === "titleMode");
+        hero.classList.toggle("showcase-mode", mode === "showcaseMode");
+        hero.classList.toggle("collection-mode", mode === "collectionMode");
+        hero.classList.toggle("showcase-seen", hasSeenShowcase && mode === "showcaseMode");
+        papers.forEach((el) => {
+          const id = el.dataset.id;
+          placePaper(el, state[id], delayed ? notes[id].delay : 0);
+        });
+      }
+
+      function moveToScattered(nextMode = "scattered", delayed = true) {
+        mode = nextMode;
+        hasOpened = true;
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...note.scattered };
+        });
+        render(delayed);
+      }
+
+      function openStackGently() {
+        if (openingTimer) return;
+        openingTimer = window.setTimeout(() => {
+          openingTimer = null;
+          moveToScattered("scattered", false);
+          if (window.scrollY > window.innerHeight * 0.36) {
+            window.setTimeout(() => {
+              if (window.scrollY > window.innerHeight * 1.68 && mode === "scattered") {
+                enterCollectionMode();
+              } else if (window.scrollY > window.innerHeight * 1.28 && mode === "scattered") {
+                enterShowcaseMode();
+              } else if (window.scrollY > window.innerHeight * 0.36 && mode === "scattered") {
+                enterTitleMode();
+              }
+            }, 620);
+          }
+        }, 220);
+      }
+
+      function enterTitleMode() {
+        mode = "titleMode";
+        hasOpened = true;
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...(note.title || note.scattered) };
+        });
+        render(true);
+      }
+
+      function enterShowcaseMode() {
+        const firstShowcaseVisit = !hasSeenShowcase;
+        mode = "showcaseMode";
+        hasOpened = true;
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...(note.title || note.scattered) };
+        });
+        render(true);
+        if (firstShowcaseVisit) {
+          if (showcaseSeenTimer) window.clearTimeout(showcaseSeenTimer);
+          showcaseSeenTimer = window.setTimeout(() => {
+            hasSeenShowcase = true;
+            showcaseSeenTimer = null;
+            if (mode === "showcaseMode") {
+              hero.classList.add("showcase-seen");
+            }
+          }, 1120);
+        }
+      }
+
+      function enterCollectionMode() {
+        mode = "collectionMode";
+        hasOpened = true;
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...(note.title || note.scattered) };
+        });
+        render(true);
+      }
+
+      function leaveTitleMode() {
+        mode = "scattered";
+        hasOpened = true;
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...note.scattered };
+        });
+        render(true);
+      }
+
+      function moveToInitialStack() {
+        mode = "initialStack";
+        hasOpened = false;
+        hero.classList.remove("opening-stack");
+        if (openingTimer) {
+          window.clearTimeout(openingTimer);
+          openingTimer = null;
+        }
+        Object.entries(notes).forEach(([id, note]) => {
+          state[id] = { ...note.initial };
+        });
+        render(true);
+      }
+
+      // Only an upward return to the very top restores the first-screen stack.
+      function handleScroll() {
+        const trigger = window.innerHeight * 0.36;
+        const showcaseTrigger = window.innerHeight * 1.28;
+        const collectionStart = window.innerHeight * 1.68;
+        const collectionEnd = window.innerHeight * 2.9;
+        const postPageSpan = window.innerHeight * 1.18;
+        const collectionProgress = clamp01((window.scrollY - collectionStart) / (collectionEnd - collectionStart));
+        const maxPostFlow = DESIGN.height * 6;
+        const postFlow = Math.min(
+          maxPostFlow,
+          Math.max(0, ((window.scrollY - collectionEnd) / postPageSpan) * DESIGN.height)
+        );
+        const sixthProgress = clamp01(postFlow / DESIGN.height);
+        const seventhProgress = clamp01((postFlow - DESIGN.height) / DESIGN.height);
+        const eighthProgress = clamp01((postFlow - DESIGN.height * 2) / DESIGN.height);
+        const ninthProgress = clamp01((postFlow - DESIGN.height * 3) / DESIGN.height);
+        const tenthProgress = clamp01((postFlow - DESIGN.height * 4) / DESIGN.height);
+        const eleventhProgress = clamp01((postFlow - DESIGN.height * 5) / DESIGN.height);
+        const currentScrollY = window.scrollY;
+        const isScrollingUp = currentScrollY < lastScrollY;
+
+        updateFixedBackground(currentScrollY);
+        updatePageIndicator(currentScrollY);
+        updateCollectionProgress(collectionProgress);
+        updatePostFlow(postFlow);
+        if (sixthProgress > 0) {
+          updateSixthProgress(sixthProgress);
+        }
+        if (seventhProgress > 0) {
+          updateSeventhProgress(seventhProgress);
+        }
+        if (eighthProgress > 0) {
+          updateEighthProgress(eighthProgress);
+        }
+        if (ninthProgress > 0) {
+          updatePlainPageProgress("ninth", ninthProgress);
+        }
+        if (tenthProgress > 0) {
+          updatePlainPageProgress("tenth", tenthProgress);
+        }
+        if (eleventhProgress > 0) {
+          updatePlainPageProgress("eleventh", eleventhProgress);
+        }
+
+        if (currentScrollY <= 4 && isScrollingUp) {
+          if (hasOpened) {
+            if (mode !== "scattered") moveToScattered("scattered", false);
+          } else if (mode !== "initialStack") {
+            moveToInitialStack();
+          }
+        } else if (mode === "initialStack" && currentScrollY > 8) {
+          openStackGently();
+        } else if (currentScrollY > collectionStart) {
+          if (mode !== "collectionMode") enterCollectionMode();
+        } else if (currentScrollY > showcaseTrigger) {
+          if (mode !== "showcaseMode") enterShowcaseMode();
+        } else if (currentScrollY > trigger) {
+          if (mode !== "titleMode") enterTitleMode();
+        } else if (mode === "titleMode" || mode === "showcaseMode" || mode === "collectionMode") {
+          leaveTitleMode();
+        }
+
+        lastScrollY = currentScrollY;
+      }
+
+      function requestScrollUpdate() {
+        if (scrollFrame) return;
+        scrollFrame = window.requestAnimationFrame(() => {
+          scrollFrame = 0;
+          handleScroll();
+        });
+      }
+
+      function startDrag(event, el) {
+        if (event.button !== undefined && event.button !== 0) return;
+        const id = el.dataset.id;
+        if (mode !== "scattered") return;
+        event.preventDefault();
+        el.setPointerCapture?.(event.pointerId);
+        el.classList.add("dragging");
+        state[id].z = ++zPeak;
+        placePaper(el, state[id], 0);
+        activeDrag = {
+          id,
+          el,
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          originX: state[id].x,
+          originY: state[id].y,
+          moved: false
+        };
+      }
+
+      function dragMove(event) {
+        if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+        const dx = (event.clientX - activeDrag.startX) / scale;
+        const dy = (event.clientY - activeDrag.startY) / scale;
+        const clamped = clampPosition(
+          activeDrag.id,
+          activeDrag.originX + dx,
+          activeDrag.originY + dy
+        );
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          activeDrag.moved = true;
+        }
+        state[activeDrag.id].x = clamped.x;
+        state[activeDrag.id].y = clamped.y;
+        placePaper(activeDrag.el, state[activeDrag.id], 0);
+      }
+
+      function endDrag(event) {
+        if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+        if (activeDrag.moved) {
+          suppressClickUntil = performance.now() + 260;
+        }
+        activeDrag.el.releasePointerCapture?.(event.pointerId);
+        activeDrag.el.classList.remove("dragging");
+        activeDrag = null;
+      }
+
+      function handleWheelGesture(event) {
+        if (activeDrag) return;
+        if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+        event.preventDefault();
+
+        window.clearTimeout(wheelGestureTimer);
+        wheelGestureTimer = window.setTimeout(() => {
+          wheelGestureDelta = 0;
+          wheelGestureTriggered = false;
+        }, 180);
+
+        if (isPageAnimating || wheelGestureTriggered) return;
+        wheelGestureDelta += event.deltaY;
+        if (Math.abs(wheelGestureDelta) < 42) return;
+
+        wheelGestureTriggered = true;
+        triggerGestureNavigation(wheelGestureDelta > 0 ? 1 : -1);
+      }
+
+      function handleTouchStart(event) {
+        if (activeDrag) return;
+        if (event.touches.length !== 1) return;
+        touchStarted = true;
+        touchStartY = event.touches[0].clientY;
+        touchStartX = event.touches[0].clientX;
+      }
+
+      function handleTouchMove(event) {
+        if (!touchStarted || activeDrag) return;
+        event.preventDefault();
+      }
+
+      function handleTouchEnd(event) {
+        if (!touchStarted || activeDrag || !event.changedTouches.length) return;
+        const touch = event.changedTouches[0];
+        const deltaY = touchStartY - touch.clientY;
+        const deltaX = touchStartX - touch.clientX;
+        touchStarted = false;
+
+        if (Math.abs(deltaY) < 34 || Math.abs(deltaY) < Math.abs(deltaX) * 1.25) return;
+        if (isPageAnimating) return;
+        triggerGestureNavigation(deltaY > 0 ? 1 : -1);
+      }
+
+      function initialize() {
+        updateScale();
+        papers.forEach((el) => {
+          const id = el.dataset.id;
+          const note = notes[id];
+          const [width, height] = note.size;
+          el.style.width = `${width}px`;
+          el.style.height = `${height}px`;
+          el.addEventListener("pointerdown", (event) => startDrag(event, el));
+          el.addEventListener("pointermove", dragMove);
+          el.addEventListener("pointerup", endDrag);
+          el.addEventListener("pointercancel", endDrag);
+          el.addEventListener("lostpointercapture", () => {
+            el.classList.remove("dragging");
+            activeDrag = null;
+          });
+        });
+
+        showcaseImages.forEach((img) => {
+          img.draggable = false;
+        });
+
+        questionCard.addEventListener("click", (event) => {
+          if (mode !== "showcaseMode" || isPageAnimating) return;
+          event.stopPropagation();
+          triggerGestureNavigation(1);
+        });
+
+        window.addEventListener("resize", () => {
+          lastBackgroundKey = "";
+          lastCollectionKey = "";
+          lastSixthKey = "";
+          lastSeventhKey = "";
+          lastEighthKey = "";
+          updateScale();
+          render(false);
+          requestScrollUpdate();
+        });
+        window.addEventListener("wheel", handleWheelGesture, { passive: false });
+        window.addEventListener("touchstart", handleTouchStart, { passive: true });
+        window.addEventListener("touchmove", handleTouchMove, { passive: false });
+        window.addEventListener("touchend", handleTouchEnd, { passive: true });
+        window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+        updateCollectionProgress(0);
+        render(false);
+        handleScroll();
+        window.requestAnimationFrame(() => {
+          hero.classList.add("ready");
+        });
+        window.setTimeout(() => {
+          if (mode === "initialStack" && window.scrollY < window.innerHeight * 0.18) {
+            openStackGently();
+          }
+        }, 1000);
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>生活特辑</title>
+    <link rel="stylesheet" href="./styles.css?v=28" />
+  </head>
+  <body>
+    <main class="phone-shell" aria-label="生活特辑页面">
+      <section class="page-capture" aria-hidden="true">
+        <img class="page-bg" src="./assets/life-home-bg.png" alt="" />
+      </section>
+      <section class="modal-layer is-open" id="lifeModal" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
+        <button class="scrim" id="scrimClose" type="button" aria-label="关闭弹窗"></button>
+        <div class="modal-card" role="document">
+          <button class="close-button" id="closeModal" type="button" aria-label="关闭">
+            <span></span>
+            <span></span>
+          </button>
+
+          <div class="modal-visual">
+            <span class="poster poster-1"></span>
+            <span class="poster poster-2"></span>
+            <span class="poster poster-3"></span>
+            <span class="poster poster-4"></span>
+            <span class="poster poster-5"></span>
+          </div>
+
+          <div class="modal-content">
+            <p class="eyebrow">邀请懂生活的你</p>
+            <h2 id="modalTitle">创建生活特辑，分享私藏好去处</h2>
+            <div class="modal-actions">
+              <button class="primary-action" id="claimButton" type="button">去创建</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="create-page" id="createPage" aria-label="创建生活特辑">
+        <div class="create-status">
+          <img src="./assets/create-status-bar.png" alt="" />
+        </div>
+        <header class="create-header">
+          <button class="create-close" id="createClose" type="button" aria-label="关闭">
+            <img src="./assets/create-close.png" alt="" />
+          </button>
+          <h1>创建生活特辑</h1>
+        </header>
+        <h2 class="create-title">选几家你想要收录的地点</h2>
+        <label class="create-search">
+          <img src="./assets/search-icon.png" alt="" />
+          <input type="text" placeholder="输入地点名搜索" />
+        </label>
+        <div class="create-tags" aria-label="推荐分类">
+          <button type="button">吃吃喝喝</button>
+          <button type="button">早☕️晚🍷</button>
+          <button type="button">小众探索</button>
+          <button type="button">大学路</button>
+          <button type="button">🍞面包脑袋</button>
+        </div>
+        <div class="place-cloud" aria-label="地点列表">
+          <button class="place-card place-card-a" type="button">
+            <span class="add-badge">+</span>
+            <img src="./assets/place-amao.png" alt="" />
+            <strong>阿毛的深夜食堂</strong>
+            <em>打卡过3次</em>
+          </button>
+          <button class="place-card place-card-b" type="button">
+            <span class="add-badge">+</span>
+            <img src="./assets/place-aying.png" alt="" />
+            <strong>阿英家拌川</strong>
+            <em>6月24日打卡过</em>
+          </button>
+          <button class="place-card place-card-c" type="button">
+            <span class="add-badge">+</span>
+            <img src="./assets/place-sanmuchuan.png" alt="" />
+            <strong>三木川菜</strong>
+            <em>7月5日打卡过</em>
+          </button>
+          <button class="place-card place-card-d" type="button">
+            <span class="add-badge">+</span>
+            <img src="./assets/place-museum.png" alt="" />
+            <strong>浦东美术馆</strong>
+            <em>6月30日打卡过</em>
+          </button>
+          <button class="place-card place-card-e" type="button">
+            <span class="add-badge">+</span>
+            <img src="./assets/place-ama-zaodian.png" alt="" />
+            <strong>阿嬷早点</strong>
+            <em>消费过15次</em>
+          </button>
+        </div>
+        <div class="selection-drawer" id="selectionDrawer" aria-live="polite">
+          <div class="selected-list" id="selectedList" aria-label="已选择地点"></div>
+          <button class="next-step" type="button">下一步</button>
+        </div>
+      </section>
+
+      <section class="intro-page" id="introPage" aria-label="介绍生活特辑">
+        <div class="create-status">
+          <img src="./assets/create-status-bar.png" alt="" />
+        </div>
+        <header class="create-header">
+          <button class="intro-back" id="introBack" type="button" aria-label="返回">
+            <img src="./assets/create-close.png" alt="" />
+          </button>
+          <h1>创建生活特辑</h1>
+        </header>
+        <div class="intro-content">
+          <button class="cover-editor" type="button">
+            <span class="collage-tile collage-tile-a"></span>
+            <span class="collage-tile collage-tile-b"></span>
+            <span class="collage-tile collage-tile-c"></span>
+            <span class="collage-tile collage-tile-d"></span>
+            <img id="coverImage" src="./assets/card-4.png" alt="" />
+            <div class="cover-copy" aria-hidden="true">
+              <span></span>
+              <strong></strong>
+              <em></em>
+            </div>
+          </button>
+          <label class="special-input">
+            <textarea id="specialName" rows="2" placeholder="给特辑起个名字"></textarea>
+          </label>
+          <label class="special-input special-input-subtitle">
+            <textarea id="specialDescription" rows="1" placeholder="想对翻开这本特辑的人说写什么呢"></textarea>
+          </label>
+        </div>
+        <div class="intro-bottom">
+          <button class="create-now" type="button">立即创建</button>
+        </div>
+        <div class="mock-keyboard" aria-hidden="true">
+          <div class="keyboard-candidates">
+            <span>我</span>
+            <span>笑</span>
+            <span>😂</span>
+            <span>😁</span>
+            <span>哈</span>
+            <span>好</span>
+            <span>救命</span>
+            <span>这</span>
+            <span>⌄</span>
+          </div>
+          <div class="keyboard-row">
+            <span>q</span><span>w</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span>
+          </div>
+          <div class="keyboard-row keyboard-row-mid">
+            <span>a</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span><span>l</span>
+          </div>
+          <div class="keyboard-row">
+            <span class="key-system">⇧</span><span>z</span><span>x</span><span>c</span><span>v</span><span>b</span><span>n</span><span>m</span><span class="key-system">⌫</span>
+          </div>
+          <div class="keyboard-row keyboard-row-bottom">
+            <span class="key-system key-small">123</span><span class="key-system key-small">☺</span><span class="key-space">空格</span><span class="key-system key-return">换行</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-page" id="previewPage" aria-label="生活特辑详情预览">
+        <header class="preview-header">
+          <img class="preview-topbar" src="./assets/preview-topbar.png" alt="" />
+          <button class="preview-back" id="previewBack" type="button" aria-label="返回">
+          </button>
+          <button class="preview-share" type="button" aria-label="分享">
+          </button>
+        </header>
+        <div class="preview-scroll">
+          <section class="special-hero">
+            <div class="preview-collage" aria-hidden="true">
+              <span class="preview-collage-strip"></span>
+              <img class="preview-collage-main" id="previewCoverImage" src="./assets/card-4.png" alt="" />
+              <img class="preview-collage-mid" id="previewCollageMid" src="./assets/place-amao.png" alt="" />
+              <img class="preview-collage-top" id="previewCollageTop" src="./assets/place-aying.png" alt="" />
+              <img class="preview-collage-front" id="previewCollageFront" src="./assets/place-museum.png" alt="" />
+              <div class="preview-hero-panel"></div>
+            </div>
+            <h1 id="previewTitle">大学毕业前，和室友吃完的大学路</h1>
+            <p id="previewDescription">四年，四条胃，一家一家吃过来的。</p>
+          </section>
+          <section class="preview-author-panel" aria-label="作者信息">
+            <img src="./assets/author-panel.png" alt="奥利嘎嘎，大学生，吃辣星人，饭局社牛" />
+          </section>
+          <div class="preview-list-head">
+            <span id="previewPlaceCount">6个地点</span>
+            <span>更新于2026年7月7日</span>
+          </div>
+          <div class="preview-place-list" id="previewPlaceList"></div>
+        </div>
+        <button class="finish-button" type="button">完成</button>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite">进入创建生活特辑</div>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

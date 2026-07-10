@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=780, initial-scale=1">
+  <title>生活特辑 H5 Demo</title>
+  <style>
+    *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) { all: unset; display: revert; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: none; text-size-adjust: none; }
+    button { cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    body {
+      min-width: 880px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 34px 0 48px;
+      display: flex;
+      justify-content: center;
+      font-family: "PingFang SC", "Source Han Sans", "Microsoft YaHei", Arial, sans-serif;
+      background: #eef0f4;
+      color: #111;
+    }
+
+    .phone-frame {
+      position: relative;
+      width: 828px;
+      height: 1736px;
+      padding: 24px;
+      border-radius: 94px;
+      background: linear-gradient(145deg, #27272b 0%, #050506 46%, #17181b 100%);
+      box-shadow: 0 34px 84px rgba(20, 24, 32, .24), inset 0 0 0 8px #080809;
+    }
+    .phone-frame::before,
+    .phone-frame::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: rgba(255,255,255,.13);
+      pointer-events: none;
+    }
+    .phone-frame::before { top: 12px; width: 70px; height: 8px; }
+    .phone-frame::after { bottom: 12px; width: 172px; height: 6px; }
+    .phone-side-button,
+    .phone-power-button {
+      position: absolute;
+      width: 6px;
+      border-radius: 6px;
+      background: #101012;
+    }
+    .phone-side-button { left: -5px; top: 220px; height: 112px; }
+    .phone-side-button::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 142px;
+      width: 6px;
+      height: 146px;
+      border-radius: 6px;
+      background: #101012;
+    }
+    .phone-power-button { right: -5px; top: 288px; height: 170px; }
+
+    .phone-screen {
+      position: relative;
+      width: 780px;
+      height: 1688px;
+      overflow: hidden;
+      border-radius: 70px;
+      background: #fff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16);
+      isolation: isolate;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      width: 780px;
+      height: 1688px;
+      overflow: hidden;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(26px);
+      transition: opacity 260ms ease, transform 520ms cubic-bezier(.2,.76,.18,1);
+    }
+    .page.is-active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+      z-index: 2;
+    }
+    .home-page { transform: none; transition: opacity 220ms ease; }
+    .home-bg,
+    .profile-bg {
+      position: absolute;
+      inset: 0;
+      width: 780px;
+      height: 1688px;
+      object-fit: cover;
+    }
+
+    .home-special-tag {
+      position: absolute;
+      z-index: 4;
+      width: 217px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding-left: 12px;
+      color: #fff;
+      border-radius: 27px;
+      background: rgba(0,0,0,.5);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 28px;
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+    .home-special-tag img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      flex: 0 0 26px;
+    }
+    .home-special-tag .divider {
+      width: 1px;
+      height: 17px;
+      margin: 0 6px 0 4px;
+      background: rgba(255,255,255,.3);
+    }
+    .home-special-tag.selected {
+      left: 405.5px;
+      top: 723.2px;
+    }
+    .home-special-tag.food {
+      left: 22px;
+      top: 1398.1px;
+    }
+
+    .home-card-hotspot {
+      position: absolute;
+      left: 393px;
+      top: 285px;
+      width: 378px;
+      height: 664px;
+      border-radius: 8px;
+      z-index: 5;
+    }
+    .home-card-cover-anchor {
+      position: absolute;
+      left: 393px;
+      top: 285px;
+      width: 378px;
+      height: 486px;
+      pointer-events: none;
+    }
+
+    .status {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 8;
+      width: 780px;
+      height: 108px;
+      pointer-events: none;
+    }
+    .time {
+      position: absolute;
+      left: 56px;
+      top: 38px;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .signal {
+      position: absolute;
+      right: 184px;
+      top: 43px;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 28px;
+    }
+    .signal i {
+      display: block;
+      width: 7px;
+      border-radius: 7px;
+      background: #000;
+    }
+    .signal i:nth-child(1) { height: 10px; }
+    .signal i:nth-child(2) { height: 16px; }
+    .signal i:nth-child(3) { height: 22px; }
+    .signal i:nth-child(4) { height: 29px; }
+    .wifi {
+      position: absolute;
+      right: 126px;
+      top: 39px;
+      width: 34px;
+      height: 29px;
+      border: 7px solid #000;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-radius: 50%;
+    }
+    .wifi::before,
+    .wifi::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+    .wifi::before {
+      top: 8px;
+      width: 22px;
+      height: 14px;
+      border: 5px solid #000;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+    }
+    .wifi::after {
+      top: 21px;
+      width: 7px;
+      height: 7px;
+      background: #000;
+    }
+    .battery {
+      position: absolute;
+      right: 70px;
+      top: 40px;
+      width: 47px;
+      height: 24px;
+      border: 3px solid #000;
+      border-radius: 5px;
+    }
+    .battery::before {
+      content: "";
+      position: absolute;
+      right: -7px;
+      top: 6px;
+      width: 4px;
+      height: 10px;
+      border-radius: 0 3px 3px 0;
+      background: #000;
+    }
+    .battery::after {
+      content: "";
+      position: absolute;
+      inset: 3px 5px 3px 3px;
+      border-radius: 3px;
+      background: #000;
+    }
+
+    .top-action {
+      position: absolute;
+      z-index: 10;
+      top: 126px;
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      color: #111;
+    }
+    .back { left: 34px; }
+    .share { right: 37px; }
+    .back::before {
+      content: "";
+      width: 34px;
+      height: 34px;
+      border-left: 5px solid currentColor;
+      border-bottom: 5px solid currentColor;
+      transform: rotate(45deg);
+    }
+    .share::before {
+      content: "";
+      width: 32px;
+      height: 36px;
+      border: 4px solid currentColor;
+      border-top: 0;
+      border-radius: 4px;
+    }
+    .share::after {
+      content: "";
+      position: absolute;
+      top: 16px;
+      width: 20px;
+      height: 20px;
+      border-top: 4px solid currentColor;
+      border-right: 4px solid currentColor;
+      transform: rotate(-45deg);
+    }
+
+    .detail-content {
+      position: relative;
+      width: 780px;
+      height: 5133px;
+      background: #f5f5f5;
+    }
+    .detail-slice {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      width: 780px;
+      height: 5133px;
+      object-fit: fill;
+      pointer-events: none;
+    }
+    .detail-content > :not(.detail-slice):not(.detail-hero):not(.detail-slice-author-hotspot):not(.shop-hotspot) {
+      display: none;
+    }
+    .detail-content .detail-hero {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .detail-slice-author-hotspot {
+      position: absolute;
+      left: 26px;
+      top: 570px;
+      z-index: 80;
+      width: 286px;
+      height: 92px;
+      pointer-events: auto;
+      touch-action: manipulation;
+    }
+    .shop-hotspot {
+      position: absolute;
+      left: 30px;
+      z-index: 3;
+      width: 720px;
+      height: 170px;
+      pointer-events: auto;
+    }
+    .shop-hotspot.shop-1 { top: 855px; height: 178px; }
+    .shop-hotspot.shop-2 { top: 1515px; height: 150px; }
+    .shop-hotspot.shop-3 { top: 2110px; height: 165px; }
+    .shop-hotspot.shop-4 { top: 2634px; height: 165px; }
+    .shop-hotspot.shop-5 { top: 3234px; height: 160px; }
+    .detail-page {
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .detail-page.is-transitioning {
+      transition: none;
+    }
+    .detail-page::-webkit-scrollbar { display: none; }
+    .detail-sticky-chrome {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      width: 780px;
+      height: 202px;
+      margin-bottom: -202px;
+      background: transparent;
+      pointer-events: none;
+    }
+    .detail-sticky-chrome.is-nav-solid {
+      background: #f5f5f5;
+    }
+    .detail-sticky-chrome::before {
+      content: none;
+    }
+    .detail-sticky-chrome::after {
+      content: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -24px;
+      z-index: 31;
+      height: 34px;
+      background: #f5f5f5;
+      pointer-events: none;
+    }
+    .detail-topbar-art {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 31;
+      width: 780px;
+      height: 202px;
+      object-fit: cover;
+      opacity: 1;
+      pointer-events: none;
+    }
+    .detail-sticky-chrome .status {
+      z-index: 31;
+      display: none;
+    }
+    .detail-sticky-chrome .top-action {
+      z-index: 32;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .detail-sticky-chrome .top-action::before,
+    .detail-sticky-chrome .top-action::after {
+      content: none;
+    }
+    .detail-sticky-chrome.is-nav-solid::after {
+      content: "";
+    }
+    .detail-nav-title {
+      position: absolute;
+      left: 150px;
+      top: 126px;
+      z-index: 33;
+      width: 480px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #111;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 36px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+    }
+    .detail-sticky-chrome.is-nav-solid .detail-nav-title {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .detail-hero {
+      position: absolute;
+      left: 39px;
+      top: 228px;
+      width: 221px;
+      height: 281px;
+      overflow: hidden;
+      border-radius: 30px;
+      background: #eee;
+      box-shadow: -3.2px -28.8px 49.6px 9.6px rgba(0, 0, 0, 0.06);
+    }
+    .detail-hero img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+    .detail-page.is-transitioning .detail-hero {
+      visibility: hidden;
+    }
+    .detail-title {
+      position: absolute;
+      left: 296px;
+      top: 225px;
+      width: 439px;
+      height: 144px;
+      color: #111;
+      font-size: 46px;
+      font-weight: 600;
+      line-height: 1.55;
+      text-align: left;
+      letter-spacing: 0;
+    }
+    .detail-subtitle {
+      position: absolute;
+      left: 297px;
+      top: 387px;
+      width: 384px;
+      height: 36px;
+      color: #808080;
+      font-size: 24px;
+      line-height: 36px;
+      text-align: left;
+    }
+    .author-row {
+      position: absolute;
+      left: 296px;
+      top: 462px;
+      z-index: 9;
+      width: 246px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .author-chip {
+      width: 148px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      background: transparent;
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1;
+      color: #333;
+    }
+    .author-chip img {
+      width: 36px;
+      height: 36px;
+      margin-left: 0;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .follow {
+      width: 82px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #cfcfcf;
+      border-radius: 19px;
+      color: #8b8b8b;
+      font-size: 24px;
+    }
+
+    .place-card {
+      position: absolute;
+      left: 28px;
+      width: 724px;
+      height: 389px;
+      background: transparent;
+    }
+    .place-card.one { top: 558px; }
+    .place-card.two { top: 975px; }
+    .place-card.three { top: 1392px; }
+    .place-card.four { top: 1809px; height: 368px; }
+    .place-main {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 2;
+      width: 724px;
+      height: 196px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.94);
+    }
+    .place-card img {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      width: 148px;
+      height: 148px;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+    .place-card h3 {
+      position: absolute;
+      left: 196px;
+      top: 45px;
+      width: 360px;
+      height: 50px;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: normal;
+    }
+    .meta {
+      position: absolute;
+      left: 196px;
+      top: 111px;
+      display: flex;
+      gap: 15px;
+      color: #7a7a7a;
+      font-size: 24px;
+      line-height: 34px;
+      white-space: nowrap;
+    }
+    .meta strong { color: #ff6534; font-weight: 700; }
+    .distance {
+      position: absolute;
+      right: 31px;
+      top: 111px;
+      color: #777;
+      font-size: 24px;
+      line-height: 34px;
+    }
+    .review {
+      position: absolute;
+      left: 12px;
+      top: 188px;
+      z-index: 1;
+      width: 700px;
+      height: 201px;
+      padding: 0;
+      border-radius: 0 0 24px 24px;
+      background: rgba(255,255,255,.72);
+      color: #111;
+      font-size: 28px;
+      line-height: normal;
+      backdrop-filter: blur(2px);
+    }
+    .place-card.four .review { height: 180px; }
+    .review .counts {
+      position: absolute;
+      left: 33px;
+      top: 27px;
+      display: flex;
+      gap: 20px;
+      color: #777;
+      font-size: 24px;
+      line-height: 34px;
+    }
+    .review .counts span + span::before {
+      content: "";
+      display: inline-block;
+      width: 1px;
+      height: 16px;
+      margin: 0 13px 0 4px;
+      vertical-align: -1px;
+      background: rgba(0,0,0,.16);
+    }
+    .review > p:not(.counts) {
+      position: absolute;
+      left: 33px;
+      top: 77px;
+      width: 643px;
+      line-height: 1.46;
+    }
+    .quote {
+      position: absolute;
+      right: 28px;
+      bottom: 20px;
+      color: rgba(0,0,0,.06);
+      font-size: 62px;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+    .detail-comments {
+      position: absolute;
+      left: 45px;
+      top: 2225px;
+      width: 684px;
+      color: #111;
+    }
+    .detail-comments h2 {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 44px;
+      letter-spacing: 0;
+    }
+    .comment-compose {
+      position: relative;
+      height: 72px;
+      margin-top: 57px;
+      padding-left: 96px;
+    }
+    .comment-compose .comment-avatar {
+      top: 0;
+    }
+    .comment-input {
+      position: relative;
+      width: 590px;
+      height: 70px;
+      border-radius: 35px;
+      display: flex;
+      align-items: center;
+      padding-left: 32px;
+      color: #a8a8a8;
+      background: #fff;
+      font-size: 29px;
+      line-height: 70px;
+      box-shadow: 0 10px 34px rgba(0,0,0,.02);
+    }
+    .comment-tools {
+      position: absolute;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      color: #9d9d9d;
+      font-size: 39px;
+      line-height: 1;
+    }
+    .comment-item {
+      position: relative;
+      min-height: 260px;
+      margin-top: 43px;
+      padding-left: 96px;
+      color: #333;
+    }
+    .comment-avatar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      object-fit: cover;
+    }
+    .comment-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #9a9a9a;
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 38px;
+      letter-spacing: 0;
+    }
+    .comment-item p {
+      width: 572px;
+      color: #333;
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 45px;
+      letter-spacing: 0;
+    }
+    .comment-meta {
+      margin-top: 6px;
+      display: flex;
+      gap: 14px;
+      color: #9a9a9a;
+      font-size: 26px;
+      line-height: 38px;
+    }
+    .comment-actions {
+      position: absolute;
+      right: 9px;
+      top: 140px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      color: #9a9a9a;
+      font-size: 28px;
+      line-height: 34px;
+    }
+    .comment-heart,
+    .comment-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pinned-label {
+      display: inline-flex;
+      height: 36px;
+      margin-top: 15px;
+      padding: 0 8px;
+      border-radius: 4px;
+      align-items: center;
+      color: #ff6438;
+      background: #fff1e9;
+      font-size: 24px;
+      line-height: 36px;
+    }
+    .comment-reply {
+      position: relative;
+      margin-top: 25px;
+      padding-left: 66px;
+    }
+    .comment-reply .comment-avatar {
+      width: 52px;
+      height: 52px;
+    }
+    .comment-reply strong {
+      display: inline-block;
+      margin: 0 10px 0 0;
+      font-size: 30px;
+      line-height: 40px;
+      vertical-align: middle;
+    }
+    .author-badge {
+      display: inline-flex;
+      height: 34px;
+      padding: 0 8px;
+      border-radius: 4px;
+      align-items: center;
+      color: #555;
+      background: #f5f5f5;
+      font-size: 22px;
+      line-height: 34px;
+      vertical-align: middle;
+    }
+    .comment-reply p {
+      width: 430px;
+      margin-top: 5px;
+      font-size: 28px;
+      line-height: 42px;
+    }
+    .comment-reply .comment-meta {
+      margin-top: 2px;
+    }
+    .comment-reply .comment-actions {
+      right: 9px;
+      top: 96px;
+    }
+    .more-replies {
+      display: block;
+      margin-top: 18px;
+      color: #173d77;
+      font-size: 28px;
+      line-height: 42px;
+    }
+    .detail-bottom-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      width: 780px;
+      height: 150px;
+      display: none;
+      background: url("assets/detail-bottom-slice.png") center / 780px 150px no-repeat;
+      pointer-events: auto;
+    }
+    .detail-page.is-active ~ .detail-bottom-bar {
+      display: block;
+    }
+    .detail-bottom-bar:has(~ .profile-page.is-active) {
+      display: none;
+    }
+    .detail-bottom-bar:has(~ .shop-page.is-active) {
+      display: none;
+    }
+
+    .profile-page,
+    .shop-page {
+      background: #fff;
+      transform: translateX(100%);
+      transition: none;
+      border-radius: 70px;
+      overflow: hidden;
+      clip-path: inset(0 round 70px);
+    }
+    .profile-page .profile-bg {
+      border-radius: 70px;
+    }
+    .shop-shot {
+      position: absolute;
+      inset: 0;
+      width: 780px;
+      height: 1688px;
+      object-fit: cover;
+      border-radius: 70px;
+    }
+    .shop-back {
+      position: absolute;
+      left: 18px;
+      top: 122px;
+      z-index: 6;
+      width: 98px;
+      height: 98px;
+      pointer-events: auto;
+    }
+    .profile-back {
+      position: absolute;
+      left: 28px;
+      top: 116px;
+      z-index: 6;
+      width: 72px;
+      height: 72px;
+      opacity: 0;
+      pointer-events: auto;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="phone-frame" aria-label="手机预览外框">
+    <span class="phone-side-button" aria-hidden="true"></span>
+    <span class="phone-power-button" aria-hidden="true"></span>
+    <main class="phone-screen" aria-label="生活特辑演示">
+      <section class="page home-page is-active" data-page="home" aria-label="首页">
+        <img class="home-bg" src="assets/home-bg-clean.png" alt="">
+        <div class="home-special-tag selected" aria-hidden="true">
+          <img src="assets/special-icon-frame37.png" alt="">
+          <span>生活特辑</span>
+          <span class="divider"></span>
+          <span>4个地点</span>
+        </div>
+        <div class="home-special-tag food" aria-hidden="true">
+          <img src="assets/special-icon-frame37.png" alt="">
+          <span>生活特辑</span>
+          <span class="divider"></span>
+          <span>5个地点</span>
+        </div>
+        <span class="home-card-cover-anchor" aria-hidden="true"></span>
+        <button class="home-card-hotspot" type="button" aria-label="打开大学路生活特辑"></button>
+      </section>
+
+      <section class="page detail-page" data-page="detail" aria-label="生活特辑详情">
+        <div class="detail-sticky-chrome" aria-hidden="false">
+          <img class="detail-topbar-art" src="assets/detail-header-actions.png" alt="" aria-hidden="true">
+          <div class="status" aria-hidden="true">
+            <span class="time">9:31</span>
+            <span class="signal"><i></i><i></i><i></i><i></i></span>
+            <span class="wifi"></span>
+            <span class="battery"></span>
+          </div>
+          <button class="top-action back detail-back" type="button" aria-label="返回首页"></button>
+          <div class="detail-nav-title" aria-hidden="true">大学毕业前和室友吃完的大学路</div>
+          <button class="top-action share" type="button" aria-label="分享"></button>
+        </div>
+        <div class="detail-content">
+          <img class="detail-slice" src="assets/detail-content-slice.png" alt="">
+          <figure class="detail-hero">
+            <img src="assets/detail-hero.png" alt="">
+          </figure>
+          <button class="detail-slice-author-hotspot" type="button" aria-label="打开奥利嘎嘎个人主页"></button>
+          <button class="shop-hotspot shop-1" type="button" data-shop="1" aria-label="打开草根夜档商户页"></button>
+          <button class="shop-hotspot shop-2" type="button" data-shop="2" aria-label="打开恰嘎江西菜商户页"></button>
+          <button class="shop-hotspot shop-3" type="button" data-shop="3" aria-label="打开大胡子冰可可商户页"></button>
+          <button class="shop-hotspot shop-4" type="button" data-shop="4" aria-label="打开猫儿滩火锅商户页"></button>
+          <button class="shop-hotspot shop-5" type="button" data-shop="5" aria-label="打开夏朵餐厅商户页"></button>
+          <h1 class="detail-title">大学毕业前<br>和室友吃完的大学路</h1>
+          <p class="detail-subtitle">四年，四条胃，一家一家吃过来的。</p>
+          <div class="author-row">
+            <button class="author-chip" type="button" aria-label="打开奥利嘎嘎个人主页">
+              <img src="assets/detail-author-avatar.png" alt="">
+              <span>奥利嘎嘎</span>
+            </button>
+            <button class="follow" type="button">关注</button>
+          </div>
+
+          <article class="place-card one">
+            <div class="place-main">
+              <img src="assets/detail-restaurant-1.png" alt="">
+              <h3>阿毛的深夜食堂</h3>
+              <div class="meta"><strong>4.4星</strong><span>¥47/人</span><span>川菜</span><span>大学路</span></div>
+              <span class="distance">1.5km</span>
+            </div>
+            <div class="review">
+              <p class="counts"><span>打卡过8次</span><span>评价3次超预期</span></p>
+              <p>这家开到凌晨三点，每次赶完ddl我们都在这儿碰头。</p>
+              <span class="quote">”</span>
+            </div>
+          </article>
+
+          <article class="place-card two">
+            <div class="place-main">
+              <img src="assets/detail-restaurant-2.png" alt="">
+              <h3>那家不辣的川菜</h3>
+              <div class="meta"><strong>4.5星</strong><span>¥91/人</span><span>川菜</span><span>大学路</span></div>
+              <span class="distance">2.1km</span>
+            </div>
+            <div class="review">
+              <p class="counts"><span>打卡过3次</span></p>
+              <p>舍友不能吃辣，老板说 ‘没事我单独给你做一份’，我们就赖上了。</p>
+              <span class="quote">”</span>
+            </div>
+          </article>
+
+          <article class="place-card three">
+            <div class="place-main">
+              <img src="assets/detail-restaurant-3.png" alt="">
+              <h3>阿英家拌川</h3>
+              <div class="meta"><strong>3.9星</strong><span>¥36/人</span><span>杭帮菜</span><span>大学路</span></div>
+              <span class="distance">700m</span>
+            </div>
+            <div class="review">
+              <p class="counts"><span>打卡过8次</span><span>评价3次超预期</span></p>
+              <p>毕业答辩那天晚上，我们在门口拍了张照，老板说“常回来”</p>
+              <span class="quote">”</span>
+            </div>
+          </article>
+
+          <article class="place-card four">
+            <div class="place-main">
+              <img src="assets/detail-restaurant-4.png" alt="">
+              <h3>甜到忧伤的奶茶</h3>
+              <div class="meta"><strong>4.2星</strong><span>¥28/人</span><span>饮品</span><span>大学路</span></div>
+              <span class="distance">700m</span>
+            </div>
+            <div class="review">
+              <p class="counts"><span>打卡过5次</span><span>评价1次超预期</span></p>
+              <p>每次失恋都点这家的全糖，喝完觉得自己又行了</p>
+              <span class="quote">”</span>
+            </div>
+          </article>
+
+          <section class="detail-comments" aria-label="评论">
+            <h2>评论·30</h2>
+            <div class="comment-compose">
+              <img class="comment-avatar" src="assets/comment-dog-avatar.png" alt="">
+              <div class="comment-input">
+                <span>说点儿友善评论吧</span>
+                <span class="comment-tools" aria-hidden="true">
+                  <span>@</span>
+                  <span>☺</span>
+                  <span>▧</span>
+                </span>
+              </div>
+            </div>
+            <article class="comment-item">
+              <img class="comment-avatar" src="assets/comment-user-avatar.png" alt="">
+              <strong>张太阳拔萝卜</strong>
+              <p>请问如果是晚上要拍外滩夜景最好选哪里呢？求博主推荐 🥐 ❤ 🫣 🫣 😷 😵</p>
+              <div class="comment-meta">
+                <span>2024-12-27</span>
+                <span>广东</span>
+                <span>回复</span>
+              </div>
+              <div class="comment-actions" aria-hidden="true">
+                <span class="comment-heart">♡<span>1</span></span>
+                <span class="comment-link">♡</span>
+              </div>
+              <span class="pinned-label">置顶评论</span>
+              <div class="comment-reply">
+                <img class="comment-avatar" src="assets/comment-author-avatar.png" alt="">
+                <strong>且挫且大头</strong>
+                <span class="author-badge">作者</span>
+                <p>东方明珠 🥱</p>
+                <div class="comment-meta">
+                  <span>04-07</span>
+                  <span>上海</span>
+                  <span>回复</span>
+                </div>
+                <div class="comment-actions" aria-hidden="true">
+                  <span class="comment-heart">♡<span>72</span></span>
+                  <span class="comment-link">♡</span>
+                </div>
+                <span class="more-replies">展开 3 条回复</span>
+              </div>
+            </article>
+          </section>
+        </div>
+      </section>
+      <div class="detail-bottom-bar" aria-hidden="true"></div>
+
+      <section class="page profile-page" data-page="profile" aria-label="奥利嘎嘎个人主页">
+        <img class="profile-bg" src="assets/profile-bg.png" alt="">
+        <button class="top-action back profile-back" type="button" aria-label="返回详情"></button>
+      </section>
+
+      <section class="page shop-page" data-shop-page="1" aria-label="草根夜档商户页">
+        <img class="shop-shot" src="assets/shop-pages/shop-1.png" alt="">
+        <button class="shop-back" type="button" aria-label="返回生活特辑详情"></button>
+      </section>
+      <section class="page shop-page" data-shop-page="2" aria-label="恰嘎江西菜商户页">
+        <img class="shop-shot" src="assets/shop-pages/shop-2.png" alt="">
+        <button class="shop-back" type="button" aria-label="返回生活特辑详情"></button>
+      </section>
+      <section class="page shop-page" data-shop-page="3" aria-label="大胡子冰可可商户页">
+        <img class="shop-shot" src="assets/shop-pages/shop-3.png" alt="">
+        <button class="shop-back" type="button" aria-label="返回生活特辑详情"></button>
+      </section>
+      <section class="page shop-page" data-shop-page="4" aria-label="猫儿滩火锅商户页">
+        <img class="shop-shot" src="assets/shop-pages/shop-4.png" alt="">
+        <button class="shop-back" type="button" aria-label="返回生活特辑详情"></button>
+      </section>
+      <section class="page shop-page" data-shop-page="5" aria-label="夏朵餐厅商户页">
+        <img class="shop-shot" src="assets/shop-pages/shop-5.png" alt="">
+        <button class="shop-back" type="button" aria-label="返回生活特辑详情"></button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const pages = {
+        home: document.querySelector('.home-page'),
+        detail: document.querySelector('.detail-page'),
+        profile: document.querySelector('.profile-page'),
+      };
+      const homeHotspot = document.querySelector('.home-card-hotspot');
+      const detailChrome = document.querySelector('.detail-sticky-chrome');
+      const detailBack = document.querySelector('.detail-back');
+      const profileBack = document.querySelector('.profile-back');
+      const authorChip = document.querySelector('.detail-slice-author-hotspot, .author-chip');
+      const shopHotspots = [...document.querySelectorAll('.shop-hotspot')];
+      const shopPages = [...document.querySelectorAll('.shop-page')];
+      let isAnimating = false;
+
+      const activate = (name) => {
+        Object.entries(pages).forEach(([key, page]) => {
+          page.classList.toggle('is-active', key === name);
+        });
+      };
+
+      const clearPageAnimations = () => {
+        [...Object.values(pages), ...shopPages].forEach((page) => {
+          page.getAnimations().forEach((item) => item.cancel());
+          page.style.opacity = '';
+          page.style.transform = '';
+          page.style.transition = '';
+        });
+      };
+
+      const updateDetailChrome = () => {
+        detailChrome.classList.toggle('is-nav-solid', pages.detail.scrollTop > 400);
+      };
+
+      const openDetail = async () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-transitioning');
+        pages.detail.classList.add('is-active');
+        pages.detail.scrollTop = 0;
+        updateDetailChrome();
+        pages.home.style.transform = 'translateX(0)';
+        pages.detail.style.opacity = '1';
+        pages.detail.style.transform = 'translateX(100%)';
+        await new Promise(requestAnimationFrame);
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(100%)' },
+          { transform: 'translateX(0)' }
+        ], {
+          duration: 430,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        const homeSlide = pages.home.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-30%)' }
+        ], {
+          duration: 430,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        await Promise.all([detailSlide.finished, homeSlide.finished]);
+        detailSlide.cancel();
+        homeSlide.cancel();
+        pages.detail.classList.remove('is-transitioning');
+        pages.home.classList.remove('is-active');
+        pages.home.style.transform = '';
+        pages.detail.style.opacity = '';
+        pages.detail.style.transform = '';
+        isAnimating = false;
+      };
+
+      const backToHome = async () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-transitioning');
+        pages.home.classList.add('is-active');
+        pages.home.style.opacity = '1';
+        pages.home.style.transform = 'translateX(0)';
+        pages.detail.style.opacity = '1';
+        pages.detail.style.transform = 'translateX(0)';
+        await new Promise(requestAnimationFrame);
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(100%)' }
+        ], {
+          duration: 380,
+          easing: 'cubic-bezier(.3,0,.2,1)',
+          fill: 'forwards',
+        });
+        await detailSlide.finished;
+        detailSlide.cancel();
+        pages.detail.classList.remove('is-transitioning', 'is-active');
+        pages.detail.scrollTop = 0;
+        updateDetailChrome();
+        pages.home.style.opacity = '';
+        pages.home.style.transform = '';
+        pages.detail.style.opacity = '';
+        pages.detail.style.transform = '';
+        isAnimating = false;
+      };
+
+      const openProfile = async () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-active');
+        pages.profile.classList.add('is-active');
+        pages.profile.style.opacity = '1';
+        pages.profile.style.pointerEvents = 'auto';
+        pages.profile.style.transform = 'translateX(100%)';
+        pages.detail.style.transform = 'translateX(0)';
+        await new Promise(requestAnimationFrame);
+        const profileSlide = pages.profile.animate([
+          { transform: 'translateX(100%)' },
+          { transform: 'translateX(0)' }
+        ], {
+          duration: 420,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-30%)' }
+        ], {
+          duration: 420,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        await Promise.all([profileSlide.finished, detailSlide.finished]);
+        profileSlide.cancel();
+        detailSlide.cancel();
+        pages.profile.style.opacity = '';
+        pages.profile.style.pointerEvents = '';
+        pages.profile.style.transform = '';
+        pages.detail.style.transform = 'translateX(-30%)';
+        isAnimating = false;
+      };
+
+      const closeProfile = async () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-active');
+        pages.profile.classList.add('is-active');
+        pages.profile.style.opacity = '1';
+        pages.profile.style.pointerEvents = 'auto';
+        pages.profile.style.transform = 'translateX(0)';
+        pages.detail.style.transform = 'translateX(-30%)';
+        await new Promise(requestAnimationFrame);
+        const profileSlide = pages.profile.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(100%)' }
+        ], {
+          duration: 380,
+          easing: 'cubic-bezier(.3,0,.2,1)',
+          fill: 'forwards',
+        });
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(-30%)' },
+          { transform: 'translateX(0)' }
+        ], {
+          duration: 380,
+          easing: 'cubic-bezier(.3,0,.2,1)',
+          fill: 'forwards',
+        });
+        await Promise.all([profileSlide.finished, detailSlide.finished]);
+        profileSlide.cancel();
+        detailSlide.cancel();
+        pages.profile.classList.remove('is-active');
+        pages.profile.style.opacity = '';
+        pages.profile.style.pointerEvents = '';
+        pages.profile.style.transform = '';
+        pages.detail.style.transform = '';
+        isAnimating = false;
+      };
+
+      const openShop = async (shopId) => {
+        if (isAnimating) return;
+        const shopPage = shopPages.find((page) => page.dataset.shopPage === shopId);
+        if (!shopPage) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-active');
+        shopPage.classList.add('is-active');
+        shopPage.style.opacity = '1';
+        shopPage.style.pointerEvents = 'auto';
+        shopPage.style.transform = 'translateX(100%)';
+        pages.detail.style.transform = 'translateX(0)';
+        await new Promise(requestAnimationFrame);
+        const shopSlide = shopPage.animate([
+          { transform: 'translateX(100%)' },
+          { transform: 'translateX(0)' }
+        ], {
+          duration: 420,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(-30%)' }
+        ], {
+          duration: 420,
+          easing: 'cubic-bezier(.2,.76,.18,1)',
+          fill: 'forwards',
+        });
+        await Promise.all([shopSlide.finished, detailSlide.finished]);
+        shopSlide.cancel();
+        detailSlide.cancel();
+        shopPage.style.opacity = '';
+        shopPage.style.pointerEvents = '';
+        shopPage.style.transform = '';
+        pages.detail.style.transform = 'translateX(-30%)';
+        isAnimating = false;
+      };
+
+      const closeShop = async (shopPage) => {
+        if (isAnimating || !shopPage) return;
+        isAnimating = true;
+        clearPageAnimations();
+        pages.detail.classList.add('is-active');
+        shopPage.classList.add('is-active');
+        shopPage.style.opacity = '1';
+        shopPage.style.pointerEvents = 'auto';
+        shopPage.style.transform = 'translateX(0)';
+        pages.detail.style.transform = 'translateX(-30%)';
+        await new Promise(requestAnimationFrame);
+        const shopSlide = shopPage.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(100%)' }
+        ], {
+          duration: 380,
+          easing: 'cubic-bezier(.3,0,.2,1)',
+          fill: 'forwards',
+        });
+        const detailSlide = pages.detail.animate([
+          { transform: 'translateX(-30%)' },
+          { transform: 'translateX(0)' }
+        ], {
+          duration: 380,
+          easing: 'cubic-bezier(.3,0,.2,1)',
+          fill: 'forwards',
+        });
+        await Promise.all([shopSlide.finished, detailSlide.finished]);
+        shopSlide.cancel();
+        detailSlide.cancel();
+        shopPage.classList.remove('is-active');
+        shopPage.style.opacity = '';
+        shopPage.style.pointerEvents = '';
+        shopPage.style.transform = '';
+        pages.detail.style.transform = '';
+        updateDetailChrome();
+        isAnimating = false;
+      };
+
+      homeHotspot.addEventListener('click', openDetail);
+      detailBack.addEventListener('click', backToHome);
+      pages.detail.addEventListener('scroll', updateDetailChrome, { passive: true });
+      pages.detail.addEventListener('click', (event) => {
+        if (!pages.detail.classList.contains('is-active')) return;
+        if (pages.profile.classList.contains('is-active')) return;
+        if (shopPages.some((page) => page.classList.contains('is-active'))) return;
+        const box = pages.detail.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const y = event.clientY - box.top;
+        const contentY = y + pages.detail.scrollTop;
+        if (x >= 26 && x <= 312 && contentY >= 570 && contentY <= 662) {
+          event.preventDefault();
+          event.stopPropagation();
+          openProfile();
+        }
+      }, true);
+      pages.detail.addEventListener('click', (event) => {
+        if (!pages.detail.classList.contains('is-active')) return;
+        const box = pages.detail.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const y = event.clientY - box.top;
+        if (x >= 34 && x <= 128 && y >= 116 && y <= 250) {
+          backToHome();
+          return;
+        }
+        const contentY = y + pages.detail.scrollTop;
+        if (x >= 26 && x <= 312 && contentY >= 570 && contentY <= 662) {
+          openProfile();
+        }
+      });
+      authorChip.addEventListener('click', openProfile);
+      profileBack.addEventListener('click', closeProfile);
+      shopHotspots.forEach((hotspot) => {
+        hotspot.addEventListener('click', () => openShop(hotspot.dataset.shop));
+      });
+      shopPages.forEach((shopPage) => {
+        shopPage.querySelector('.shop-back').addEventListener('click', () => closeShop(shopPage));
+      });
+    })();
+  </script>
+</body>
+</html>

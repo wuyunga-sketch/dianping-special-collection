@@ -945,12 +945,28 @@
         will-change: transform;
       }
 
-      .page-embed iframe {
+      .page-embed iframe,
+      .feed-embed iframe {
         display: block;
         width: 100%;
         height: 100%;
         border: 0;
         background: #fff;
+      }
+
+      .feed-embed {
+        position: absolute;
+        left: 50%;
+        top: 560px;
+        width: 760px;
+        height: 360px;
+        transform: translateX(-50%);
+        border: 0;
+        border-radius: 22px;
+        background: #fff;
+        overflow: hidden;
+        pointer-events: auto;
+        will-change: transform;
       }
 
       .page-phone-image--tenth {
@@ -1809,7 +1825,7 @@
               <p>把你的“特别之处”，装订成册</p>
             </div>
             <div class="page-embed" aria-label="内嵌创建页面预览">
-              <iframe src="http://127.0.0.1:5174/" title="创建你的生活特辑预览"></iframe>
+              <iframe src="./embedded-create/" title="创建你的生活特辑预览"></iframe>
             </div>
           </section>
 
@@ -1819,7 +1835,9 @@
               <h2>你的特辑——更好的表达自己</h2>
               <p>每一次“去过”和“觉得好”，都是你的独家坐标。<br />把它们整理成册，放在个人主页上——你的判断，有了自己的位置。</p>
             </div>
-            <img class="page-phone-image page-phone-image--tenth" src="assets/web-v3-page10-ref.png" alt="" />
+            <div class="feed-embed" aria-label="内嵌信息流链路预览">
+              <iframe src="./embedded-feed/home.html" title="信息流链路预览"></iframe>
+            </div>
           </section>
 
           <section class="flow-panel page-eleventh" aria-label="消费决策工具">

@@ -253,11 +253,11 @@ function renderPreviewPage() {
   }
 
   const fallbackPlaces = [
-    { image: "./assets/place-sanmuchuan.png", title: "三木川菜" },
-    { image: "./assets/place-museum.png", title: "浦东美术馆" },
-    { image: "./assets/place-amao.png", title: "阿毛的深夜食堂" },
-    { image: "./assets/place-aying.png", title: "阿英家拌川" },
-    { image: "./assets/place-ama-zaodian.png", title: "阿嬷早点" },
+    { image: "./assets/place-sanmuchuan.webp", title: "三木川菜" },
+    { image: "./assets/place-museum.webp", title: "浦东美术馆" },
+    { image: "./assets/place-amao.webp", title: "阿毛的深夜食堂" },
+    { image: "./assets/place-aying.webp", title: "阿英家拌川" },
+    { image: "./assets/place-ama-zaodian.webp", title: "阿嬷早点" },
   ];
   const previewPlaces = selectedData.length >= 3 ? selectedData : fallbackPlaces;
   const title = document.querySelector("#specialName").value.trim() || "大学毕业前，\n和室友吃完的大学路";

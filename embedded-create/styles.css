@@ -142,27 +142,27 @@ button {
 }
 
 .poster-1 {
-  background-image: url("./assets/card-1.png");
+  background-image: url("./assets/card-1.webp");
   animation-delay: -4s;
 }
 
 .poster-2 {
-  background-image: url("./assets/card-2.png");
+  background-image: url("./assets/card-2.webp");
   animation-delay: -2s;
 }
 
 .poster-3 {
-  background-image: url("./assets/card-3.png");
+  background-image: url("./assets/card-3.webp");
   animation-delay: 0s;
 }
 
 .poster-4 {
-  background-image: url("./assets/card-4.png");
+  background-image: url("./assets/card-4.webp");
   animation-delay: -8s;
 }
 
 .poster-5 {
-  background-image: url("./assets/card-5.png");
+  background-image: url("./assets/card-5.webp");
   animation-delay: -6s;
 }
 
@@ -524,7 +524,7 @@ button {
   width: 82px;
   height: 82px;
   border-radius: 10px;
-  background-image: url("./assets/place-ama-zaodian.png");
+  background-image: url("./assets/place-ama-zaodian.webp");
   transform: rotate(10deg);
 }
 
@@ -535,7 +535,7 @@ button {
   width: 73px;
   height: 80px;
   border-radius: 9px;
-  background-image: url("./assets/place-aying.png");
+  background-image: url("./assets/place-aying.webp");
   transform: rotate(9deg);
 }
 
@@ -546,7 +546,7 @@ button {
   width: 70px;
   height: 70px;
   border-radius: 9px;
-  background-image: url("./assets/place-museum.png");
+  background-image: url("./assets/place-museum.webp");
   transform: rotate(9deg);
 }
 
